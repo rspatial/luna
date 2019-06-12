@@ -3,9 +3,10 @@ Type: Package
 Title: Satellite Remote Sensing (Earth Observation) data analysis
 Version: 0.1
 Date: 2019-06-10
-Imports: terra
-Author: Aniruddha Ghosh, Benson Kenduiywo, Robert Hijmans 
+Imports: terra, httr
+SystemRequirements: C++11
+Author: Aniruddha Ghosh, Alex Mandel, Benson Kenduiywo, Robert Hijmans 
 Maintainer: <r.hijmans@gmail.com>
-Description: A collection of tools to help in acquireing and (pre-) processing satellite remote sensing data. Mainly for LANDSAT, MODIS, and SENTINEL.
+Description: A collection of tools to help in acquiring and (pre-) processing satellite remote sensing data. Mainly for LANDSAT, MODIS, and SENTINEL.
 License: GPL (>=3)
 
