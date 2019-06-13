@@ -3,7 +3,8 @@
 humanize <- function(path, overwrite=FALSE) {
 	dir.create(path, TRUE, FALSE)
 	ofile <- file.path(path, "nasa_earthdata_products.csv")
-	if (!file.exists(ofile) | overwrite) {
+	if (!file.exists(ofile) | overwrite) { 
+	# could also check the time stamp of the file, download again if too  old
 		utils::download.file("https://cmr.earthdata.nasa.gov/search/humanizers/report",  destfile = ofile)
 	}
 	utils::read.csv(ofile, stringsAsFactor=FALSE)
