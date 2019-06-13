@@ -4,9 +4,9 @@ humanize <- function(path, overwrite=FALSE) {
 	dir.create(path, TRUE, FALSE)
 	ofile <- file.path(path, "nasa_earthdata_products.csv")
 	if (!file.exists(ofile) | overwrite) {
-		download.file("https://cmr.earthdata.nasa.gov/search/humanizers/report",  destfile = ofile)
+		utils::download.file("https://cmr.earthdata.nasa.gov/search/humanizers/report",  destfile = ofile)
 	}
-	read.csv(ofile, stringsAsFactor=FALSE)
+	utils::read.csv(ofile, stringsAsFactor=FALSE)
 }
 	
 
