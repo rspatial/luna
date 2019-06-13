@@ -1,9 +1,23 @@
+
+# humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
+humanize <- function(path, overwrite=FALSE) {
+	dir.create(path, TRUE, FALSE)
+	ofile <- file.path(path, "nasa_earthdata_products.csv")
+	if (!file.exists(ofile) | overwrite) {
+		download.file("https://cmr.earthdata.nasa.gov/search/humanizers/report",  destfile = ofile)
+	}
+	read.csv(ofile, stringsAsFactor=FALSE)
+}
+	
+
+
+
 # Converted from the NASA official pyCMR
 # https://github.com/nasa/pyCMR
 
 #AUTH_HOST = 'urs.earthdata.nasa.gov'
 
-get_search_results <- function(url, limit, kwargs){
+.get_search_results <- function(url, limit, kwargs){
   #  Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
@@ -89,7 +103,7 @@ cmr_download <- function(urls, path, username=NULL, password=NULL, credentials){
 	return(files)
 }
 
-searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, ...){
+searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
   #Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
@@ -97,11 +111,12 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   
   e <- as.vector(t(matrix(as.vector(extent), ncol=2)))
   e <- paste0(e, collapse=",")
-  start_date = as.Date(start_date)
-  end_date = as.Date(end_date)
   
-  
-  temporal= paste0(start_date, "T00:00:00Z,", end_date, "T00:00:00Z")
+  # for testing validity
+  start_date <- as.Date(start_date)
+  end_date <- as.Date(end_date)
+    
+  temporal <- paste0(start_date, datesuffix, ",", end_date, datesuffix)
   
   params <- list(
     short_name=product,	temporal=temporal,
