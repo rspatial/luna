@@ -69,7 +69,7 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
   # :param kwargs ...: search parameters
   # :return: dataframe of results
   SEARCH_COLLECTION_URL = paste0(cmr_host,"/search/collections")
-  results <- get_search_results(url=SEARCH_COLLECTION_URL, limit=limit, ...)
+  results <- .get_search_results(url=SEARCH_COLLECTION_URL, limit=limit, ...)
   return(results)
 }
 
@@ -131,7 +131,7 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   
   cmr_host="https://cmr.earthdata.nasa.gov"
   url <- paste0(cmr_host,"/search/granules")
-  results <- get_search_results(url=url, limit=limit, kwargs=params)
+  results <- .get_search_results(url=url, limit=limit, kwargs=params)
   return(results) 
 }
 
