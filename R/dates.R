@@ -11,3 +11,15 @@ dateFromYearDoy <- function(x) {
 	return(as.Date(doy, origin=paste(year-1, "-12-31", sep='')))
 }
 
+monthFromDate <- function(date) {
+	date <- as.character(date)
+	as.numeric(format(as.Date(date), "%m"))
+}
+
+yearFromDate <- function(date) {
+# date is a string like "2007-7-10"    YYYY-M-D
+# to avoid date shifts because of your local time zone if date is a POSIX. 
+	date <- as.character(date)
+	as.numeric(format(as.Date(date), "%Y"))
+}
+
