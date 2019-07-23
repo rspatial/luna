@@ -7,6 +7,7 @@
 *.zip
 *.Rapp.history
 *.RData
+*.Rproj
 *-Ex.R
 /*.tar.gz
 /*.Rcheck/

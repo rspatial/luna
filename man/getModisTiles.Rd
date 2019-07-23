@@ -11,13 +11,12 @@
 }
 
 \arguments{
-  \item{product}{Character, currently supported products can be found using \code{listProducts()} function
-  \item{start_date}{Character. start date for the data requested. currently accepted format %Y-%m-%d}
-  \item{end_date}{Character. end date for the data requested. currently accepted format %Y-%m-%d}
+  \item{product}{Character, currently supported products can be found using \code{listProducts()}}
+  \item{start_date}{Character. start date for the data requested. currently accepted format Y-m-d}
+  \item{end_date}{Character. end date for the data requested. currently accepted format Y-m-d}
   \item{aoi}{Extent object, or any object from which an Extent object can be extracted (see examples)}
   \item{download}{Logical. If \code{TRUE} data will be downloaded if not locally available}
-  \item{downdir}{Character. Path name indicating where to store the data. No default path available as the downloaded file could be large,
-  users requested to supply a valid path)}
+  \item{downdir}{Character. Path name indicating where to store the data. No default path available as the downloaded file could be large, users requested to supply a valid path)}
   \item{overwrite}{Logical. If \code{TRUE} overwrite any local files}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
