@@ -51,30 +51,36 @@ getProducts <- function(product = NULL, download = TRUE,...){
 	} 	
 }
 
-getCredentials <- function(url = NULL, user = NULL, password = NULL) {
-  # where is the credentials
-	credfile <- path.expand("~/luna_cred.rds")
+getCredentials <- function(url = NULL, user = NULL, password = NULL, credfile = NULL, savecrd=FALSE, ...) {
+
+	saveCrd <- function(credInfo) {
+		credfile <- path.expand("~/luna_cred.rds")
+		if (file.exists(credfile)) {
+			d <- readRDS(credfile)
+			i <- which(url == d$url) 
+			credInfo <- rbind(credInfo, d)
+			if (length(i) > 0) {
+				credInfo <- credInfo[-i, ]
+			}
+		}
+		saveRDS(credInfo, credfile)
+	}
   
-	if(!file.exists(credfile)) {
+	if (!is.null(credfile)) { # it is useful to be able to point to a file
+		credInfo <- readRDS(credfile)
+		usr = credInfo$user
+		pswd = credInfo$password
+	} else if ((!is.null(user)) && (!is.null(password))) {
+		usr <- user
+		pswd <- password
+		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+		if (savecrd) saveCrd(credInfo)
+	} else {
 		paste(url)
 		usr <- readline(paste("username:", url, ": \n"))
 		pswd <- readline(paste("password: \n"))
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-		saveRDS(credInfo, credfile)
-    
-	} else {
-		credInfoFile <- readRDS(credfile)
-	
-		if (url %in% credInfoFile$url) {
-			credInfo <- credInfoFile[credInfoFile$url == url, c("user", "password")]
-		  
-		} else {
-			usr <- readline(paste("Please type your username for", url, ": \n"))
-			pswd <- readline(paste("Please type your password for user", user, "\n for", url, ": \n"))
-			credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-			credInfo <- rbind(credInfoFile, credInfo, stringsAsFactors = FALSE)
-			saveRDS(credInfo, credfile)
-		}
+		if (savecrd) saveCrd(credInfo)
 	}
 	return(credInfo)
 }
@@ -89,3 +95,4 @@ getProducts <- function(product){
 	pp <- pp[grep(product, pp$short_name), ]
 	return(unique(pp$short_name))
 }
+
