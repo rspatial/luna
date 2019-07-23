@@ -33,6 +33,8 @@
     stop_for_status(response)
     
     #unparsed_page = content(response,parsed="application/json")
+    # parsing without messages
+    # http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
     unparsed_page = content(response)
     
     #TODO: suppress parsing message
@@ -89,7 +91,7 @@ cmr_download <- function(urls, path, username=NULL, password=NULL, overwrite, ..
     if (inherits(files, "error")) {
       warning("failure:", urls[i])
     } else {
-      files[i] = x
+      files[i] = urls[i]
     }
   }
   return(files)

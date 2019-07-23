@@ -20,3 +20,5 @@ vignettes/*.pdf
 *.knit.md
 rsconnect/
 *.csv
+.Rproj.user
+update_fork.txt
