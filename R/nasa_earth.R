@@ -1,17 +1,7 @@
-
-# humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
-humanize <- function(path, overwrite=FALSE) {
-	dir.create(path, TRUE, FALSE)
-	ofile <- file.path(path, "nasa_earthdata_products.csv")
-	if (!file.exists(ofile) | overwrite) { 
-	# could also check the time stamp of the file, download again if too  old
-		utils::download.file("https://cmr.earthdata.nasa.gov/search/humanizers/report",  destfile = ofile)
-	}
-	utils::read.csv(ofile, stringsAsFactor=FALSE)
-}
-	
-
-
+# Authors: Alex Mandel, Aniruddha Ghosh, Robert J. Hijmans 
+# July 2019
+# Version 0.1
+# Licence GPL v3
 
 # Converted from the NASA official pyCMR
 # https://github.com/nasa/pyCMR
@@ -74,34 +64,35 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
   return(results)
 }
 
-.cmr_download_one <- function(url, outpath, USERNAME, PASSWORD, ...){
+.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, ...){
   # Download a single result
   # TODO verify outdir exists if not make folder
   # TODO check if file exists
-  file <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), progress(), httr::write_disk(outpath))
+  ofile <- paste0(path,basename(url))
+  if (!file.exists(ofile) | overwrite){
+    file <- GET(url, authenticate(USERNAME, PASSWORD), progress(), write_disk(ofile, overwrite = overwrite)) 
+  }
 } 
 
-cmr_download <- function(urls, path, username=NULL, password=NULL, credentials){
+
+cmr_download <- function(urls, path, username=NULL, password=NULL, overwrite, ...){
   # Given a list of results, download all of them
   # TODO allow in parallel
   # TODO re-use a session
   
-  #dir.create(dirname(path), FALSE, TRUE)
-  # if (is.null(username)) {
-  #x <- readCreds(credentials)		
-  #usename = x$username
-  #password = x$password
-  #}
-   files <- rep("", length(url))
-	for (i in 1:length(urls)) {
-		x <- try( .cmr_download_one(urls[i], path, USERNAME= username, PASSWORD= password) )
-		if (class(x == "try-error")) {
-			warning("failure:", urls[i])
-		} else {
-			files[i] = x
-		}
-	}
-	return(files)
+  files <- rep("", length(urls))
+  for (i in 1:length(urls)) {
+    files <- tryCatch(.cmr_download_one(urls[i], path, 
+                                        USERNAME = username, PASSWORD = password,
+                                        overwrite = overwrite), 
+                      error = function(e){e})
+    if (inherits(files, "error")) {
+      warning("failure:", urls[i])
+    } else {
+      files[i] = x
+    }
+  }
+  return(files)
 }
 
 searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
