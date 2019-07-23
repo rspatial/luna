@@ -25,6 +25,6 @@ modis_mask <- function(x, bits, se, reject, ...) {
 	u <- terra::unique(x)
 	v <- unpack_reject(u, bits, se, reject)
 	uv <- cbind(u,v)
-	terra::reclassify(x, uv, ...)
+	terra::classify(x, uv, ...)
 }
 

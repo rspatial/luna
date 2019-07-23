@@ -1,5 +1,3 @@
 import(terra)
-import(raster)
-import(httr)
-exportPattern("^[[:alpha:]]+")
-exportMethods(getModisTiles,modis_mask,unpack_reject)
+exportPattern("^[^\\.\\_]")
+

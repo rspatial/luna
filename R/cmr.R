@@ -24,18 +24,18 @@
     response <- httr::GET(
       url=url,
       # TODO: fix next line to take all possible args passed via ...
-      add_headers(Accept="text/csv"),
+      httr::add_headers(Accept="text/csv"),
       query=c(kwargs, page_num=page_num) #, page_size=self._PAGE_SIZE),
       #headers=self._SEARCH_HEADER # what is the header passed from parent function?
     )
     
     # Check for a valid response
-    stop_for_status(response)
+    httr::stop_for_status(response)
     
     #unparsed_page = content(response,parsed="application/json")
     # parsing without messages
     # http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
-    unparsed_page = content(response)
+    unparsed_page = httr::content(response)
     
     #TODO: suppress parsing message
     catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
@@ -72,7 +72,7 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
   # TODO check if file exists
   ofile <- paste0(path,basename(url))
   if (!file.exists(ofile) | overwrite){
-    file <- GET(url, authenticate(USERNAME, PASSWORD), progress(), write_disk(ofile, overwrite = overwrite)) 
+    file <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(ofile, overwrite = overwrite)) 
   }
 } 
 
@@ -103,8 +103,7 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   #:param kwargs: search parameters
   #:return: dataframe of results
   
-  e <- as.vector(t(matrix(as.vector(extent), ncol=2)))
-  e <- paste0(e, collapse=",")
+  e <- .getExtent(extent)
   
   # for testing validity
   start_date <- as.Date(start_date)
