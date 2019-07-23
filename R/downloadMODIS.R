@@ -16,7 +16,7 @@ getModisTiles <- function(product = "",
                              server = "LP DAAC", ...){
   
   # first check if the product exists
-  pp <- .humanize()
+  pp <- .humanize(path = downdir)
   pp <- pp[pp$short_name == product & pp$version == version & pp$original_value == server, ]
   
   if(nrow(pp) < 1) {
