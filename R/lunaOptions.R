@@ -1,0 +1,101 @@
+# Authors: Robert J. Hijmans, Aniruddha Ghosh, Alex Mandel
+# July 2019
+# Version 0.1
+# Licence GPL v3
+
+# List different satellite data products that can be searched through CMR
+
+getProductList <- function(product = NULL, download = TRUE,...){
+   d <- .humanize()
+   
+   if (length(product) > 1){
+     paste0(product, collapse = "|")
+   }
+   
+   if (!is.null(product)){
+     pp <- d[grep(product,d$short_name), ]
+   } else {
+     return(unique(d$short_name))
+   }
+}
+
+# many of the functions are repeated from raster <https://github.com/cran/raster>
+
+.dataloc <- function() {
+  d <- getOption('rasterDataDir')
+  if (is.null(d) ) {
+    d <- getwd()
+  } else {
+    d <- trim(d)
+    if (d=='') {
+      d <- getwd()
+    }
+  }
+  return(d)
+}
+
+# humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
+# use this file to get an updated list of dataset that can searched (not always downloadable) via cmr
+
+.humanize <- function(download = TRUE, path='', ...) {
+  
+  path <- raster:::.getDataPath(path)
+  
+  filename <- file.path(path,"nasa_earthdata_products.csv")
+  
+  # could also check the time stamp of the file, download again if too  old
+  if (!file.exists(filename)) {
+    if (download) {
+      theurl <- paste0("https://cmr.earthdata.nasa.gov/search/humanizers/report")
+      raster:::.download(theurl, filename)
+      if (!file.exists(filename)) {
+        message("\nCould not download file -- perhaps it does not exist, check if the output looks good") 
+      }
+    } else {
+      message("File not available locally. Use 'download = TRUE'")
+    }
+  }	
+  if (file.exists(filename)) {
+    data <- utils::read.csv(filename, stringsAsFactor=FALSE)
+    return(data)
+  } 
+}
+
+getCredentials <- function(url = NULL, user = NULL, password = NULL) {
+  # where is the credentials
+  credfile <- path.expand("~/luna_cred.rds")
+  
+  if(!file.exists(credfile))
+  {
+    usr <- readline(paste("Please type your username for", url, ": \n"))
+    pswd <- readline(paste("Please type your password for user", user, "\n for", url, ": \n"))
+    credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+    saveRDS(credInfo, credfile)
+    
+  } else {
+    credInfoFile <- readRDS(credfile)
+    
+    if (url %in% credInfoFile$url){
+      credInfo <- credInfoFile[credInfoFile$url == url, c("user", "password")]
+      
+    } else {
+      usr <- readline(paste("Please type your username for", url, ": \n"))
+      pswd <- readline(paste("Please type your password for user", user, "\n for", url, ": \n"))
+      credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+      credInfo <- rbind(credInfoFile, credInfo, stringsAsFactors = FALSE)
+      saveRDS(credInfo, credfile)
+    }
+  }
+  return(credInfo)
+}
+
+
+# list name of the unique products
+listProducts <- function(product){
+  pp <- .humanize()
+  if (length(product) > 1){
+    products <- paste0(product, collapse = "|")
+  }
+  pp <- pp[grep(products,pp$short_name), ]
+  return(unique(pp$short_name))
+}
