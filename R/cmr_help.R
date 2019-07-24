@@ -53,7 +53,7 @@ getProducts <- function(product = NULL, download = TRUE,...){
 
 # setup credentials for different services
 # ag: this function should be exposed with a help file
-getCredentials <- function(url = NULL, username = NULL, password = NULL, credfile = NULL, savecred=FALSE, ...) {
+getCredentials <- function(url = NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, ...) {
 
 	saveCrd <- function(credInfo) {
 		credfile <- path.expand("~/luna_cred.rds")
