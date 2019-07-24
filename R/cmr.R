@@ -35,22 +35,30 @@
     #unparsed_page = content(response,parsed="application/json")
     # parsing without messages
     # http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
-    unparsed_page = httr::content(response)
+    if (http_type(response) == "text/csv"){
+      
+      # Per httr docs testing for expected type and parsing manually
+      unparsed_page = readr::read_csv(content(response, as="text"))
     
-    #TODO: suppress parsing message
-    catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
+      #TODO: suppress parsing message
+      catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
   
-    if(!inherits(catcher, "error")){
-      if(length(urls)==0){
+      if(!inherits(catcher, "error")){
+        if(length(urls)==0){
+          break
+        }
+        results <- c(results,urls)
+        page_num <- page_num+1
+      } else { 
         break
       }
-      results <- c(results,urls)
-      page_num <- page_num+1
-    } else { 
+    
+    } else {
+    
+      #The response was not a csv, we should throw and error?
       break
     }
     
-  }
   return(results)
   
 }
