@@ -1,3 +1,7 @@
+# Authors: Robert J. Hijmans, Alex Mandel, Aniruddha Ghosh
+# July 2019
+# Version 0.1
+# Licence GPL v3
 
 unpack_reject <- function(val, bits=32, se, reject) {
 	v <- rep(1, length(val))

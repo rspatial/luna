@@ -5,8 +5,8 @@
 # Licence GPL v3
 
 
-getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
-                            version = "006", limit = 100000, server = "LP DAAC", ...) {
+getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
+                            version = "006", limit = 100000, server = "LPDAAC_ECS", ...) {
   
 	stopifnot(require(readr))
 	
@@ -18,7 +18,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 	overwrite = FALSE
 
 	pp <- .humanize(path=path)
-	pp <- pp[pp$short_name == product & pp$version == version & pp$original_value == server, ]
+	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
   
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
@@ -29,7 +29,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 	}
 	cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
   
-# find product urls
+  # find product urls
 	fileurls <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 
   # TODO: need a better try-error message for the function
@@ -48,11 +48,3 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 		return(NULL)
 	}
 }
-
-
-# TODO move to a generic function
-
-
-# include descripton of products from 
-# url <- paste0("https://cmr.earthdata.nasa.gov/search/concepts/", pp$concept_id)
-# if (url == 1){browseURL(url)}
