@@ -70,17 +70,31 @@ getCredentials <- function(url = NULL, username = NULL, password = NULL, credfil
 		credInfo <- readRDS(credfile)
 		usr = credInfo$user
 		pswd = credInfo$password
-	} else if ((!is.null(user)) && (!is.null(password))) {
-		usr <- user
+	} else if ((!is.null(username)) && (!is.null(password))) {
+		usr <- username
 		pswd <- password
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
 		if (savecred) saveCrd(credInfo)
 	} else {
-		paste("Credentials for: ", url)
-		usr <- readline(paste("username: \n"))
-		pswd <- readline(paste("password: \n"))
-		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-		if (savecred) saveCrd(credInfo)
+		credfile <- path.expand("~/luna_cred.rds")
+		ok <- TRUE
+		if (file.exists(credfile)) {
+			credInfo <- readRDS(credfile)
+			credInfo <- credInfo[credInfo$url == url, ]
+			if (nrow(credInfo) == 1) {
+				usr <- credInfo$user
+				pswd <- credInfo$password
+			} else {
+				ok <- FALSE
+			}
+		}
+		if (!ok) {
+			paste("Credentials for: ", url)
+			usr <- readline(paste("username: \n"))
+			pswd <- readline(paste("password: \n"))
+			credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+			if (savecred) saveCrd(credInfo)
+		}
 	}
 	return(credInfo)
 }
