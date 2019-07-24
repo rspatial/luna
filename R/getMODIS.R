@@ -14,12 +14,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
-	if(download && missing(path)) stop("provide a path for download")
-	path = trimws(path)
-	if (path == "") path=getwd()
-
 	path <- .getCleanPath(path)
-
 	overwrite = FALSE
 
 	pp <- .humanize(path=path)
@@ -42,7 +37,10 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 		files <- cmr_download(urls = fileurls, path = path, 
                  username = cred$user, password = cred$password,
                  overwrite = overwrite)
-		return(files)		 
+		
+		# rh: is there a better way? 
+		ff <- file.path(path, basename(files))	
+		return(ff)		 
 	} else if (!download) {
 		return(basename(fileurls))
 	} else {
