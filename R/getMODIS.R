@@ -8,6 +8,8 @@
 getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
                             version = "006", limit = 100000, server = "LP DAAC", ...) {
   
+	stopifnot(require(readr))
+	
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
@@ -24,15 +26,13 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
 	} else if (nrow(pp) > 1) {
-		stop("Multiple sources availble for the requested product; \n p rovide a unique product")
-	} else {
-		print(paste("Searching", product, "for the requested specifications"))
-		utils::flush.console()
+		cat("Multiple sources availble for the requested product; \n p rovide a unique product\n")
+		print(pp)
+		stop()
 	}
-  # set/check credentials
-	cred <- getCredentials(url = "https://urs.earthdata.nasa.gov/users/new", ...)
+	cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
   
-  # find product urls
+# find product urls
 	fileurls <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 
   # TODO: need a better try-error message for the function

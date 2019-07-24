@@ -19,14 +19,14 @@
   page_num <- 1
   results <- vector('character')  #is this needed?
   while (length(results) < limit){
-    # Debug
-    print(page_num)
+    #print(page_num)
     response <- httr::GET(
-      url=url,
+		url=url,
       # TODO: fix next line to take all possible args passed via ...
-      httr::add_headers(Accept="text/csv"),
-      query=c(kwargs, page_num=page_num) #, page_size=self._PAGE_SIZE),
-      #headers=self._SEARCH_HEADER # what is the header passed from parent function?
+		httr::add_headers(Accept="text/csv"),
+		query=c(kwargs, page_num=page_num) 
+	  #, page_size=self._PAGE_SIZE),
+      # headers=self._SEARCH_HEADER # what is the header passed from parent function?
     )
     
     # Check for a valid response
@@ -112,12 +112,10 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   temporal <- paste0(start_date, datesuffix, ",", end_date, datesuffix)
   
   params <- list(
-    short_name=product,	temporal=temporal,
-	  downloadable="true", bounding_box=e
+    short_name=product,	temporal=temporal, downloadable="true", bounding_box=e
   )
   
-  pars <- list(...)
-  
+  pars <- list(...) 
   if (length(pars) > 0) {
 	  params <- c(params, pars)
   }

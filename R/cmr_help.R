@@ -51,7 +51,7 @@ getProducts <- function(product = NULL, download = TRUE,...){
 	} 	
 }
 
-getCredentials <- function(url = NULL, user = NULL, password = NULL, credfile = NULL, savecrd=FALSE, ...) {
+getCredentials <- function(url = NULL, username = NULL, password = NULL, credfile = NULL, savecred=FALSE, ...) {
 
 	saveCrd <- function(credInfo) {
 		credfile <- path.expand("~/luna_cred.rds")
@@ -74,13 +74,13 @@ getCredentials <- function(url = NULL, user = NULL, password = NULL, credfile = 
 		usr <- user
 		pswd <- password
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-		if (savecrd) saveCrd(credInfo)
+		if (savecred) saveCrd(credInfo)
 	} else {
 		paste("Credentials for: ", url)
 		usr <- readline(paste("username: \n"))
 		pswd <- readline(paste("password: \n"))
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-		if (savecrd) saveCrd(credInfo)
+		if (savecred) saveCrd(credInfo)
 	}
 	return(credInfo)
 }
