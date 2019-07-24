@@ -5,7 +5,7 @@
 
 # List different satellite data products that can be searched through CMR
 
-
+# List all unique products available through CMR
 getProducts <- function(product = NULL, download = TRUE,...){
    d <- .humanize()
    
@@ -20,15 +20,15 @@ getProducts <- function(product = NULL, download = TRUE,...){
    }
 }
 
-# many of the functions are repeated from raster <https://github.com/cran/raster>
 
 # humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
 # use this file to get an updated list of dataset that can searched (not always downloadable) via cmr
 
-.humanize <- function(download=TRUE, path="", ...) {
+.humanize <- function(download = TRUE, path="", ...) {
   
   #do not add dependencies on raster; less so to functions that are not exported
   # copy the function if we must
+  path <- .getCleanPath(path)
   
 	filename <- file.path(path,"nasa_earthdata_products.csv")
   
@@ -50,6 +50,9 @@ getProducts <- function(product = NULL, download = TRUE,...){
 	} 	
 }
 
+
+# setup credentials for different services
+# ag: this function should be exposed with a help file
 getCredentials <- function(url = NULL, username = NULL, password = NULL, credfile = NULL, savecred=FALSE, ...) {
 
 	saveCrd <- function(credInfo) {
@@ -99,13 +102,37 @@ getCredentials <- function(url = NULL, username = NULL, password = NULL, credfil
 }
 
 
-# list name of the unique products
-getProducts <- function(product){
-	pp <- .humanize()
-	if (length(product) > 1){
-		product <- paste0(product, collapse = "|")
-	}
-	pp <- pp[grep(product, pp$short_name), ]
-	return(unique(pp$short_name))
-}
 
+
+# Open the product information in a browser
+
+showInfo <- function(product, version, server, ...){
+  
+  pp <- .humanize()
+  
+  # get the unique set of information for the product
+  pp <- pp[pp$short_name == product, ]
+  
+  # include descripton of products from
+  # first condition is specific to MODIS
+  if (missing(server) | missing(version)){
+    url <- paste0("https://cmr.earthdata.nasa.gov/search/concepts/", unique(pp$concept_id))
+  } else if (server == "LPDAAC_ECS" & version == "006") {
+    pp <- pp[pp$version == version, ]
+    url <- paste0("https://lpdaac.usgs.gov/products/", tolower(unique(pp$short_name)),"v",version)
+  } else {
+    stop("Can not find the requested webpage")
+  }
+  
+  # if multiple urls returned
+  if (length(url) > 0){
+    for (i in 1:length(url)){
+      print(paste0("opening product description webpage of ", pp$short_name[i]))
+      browseURL(url[i])
+      # for multiple webpages
+      #invisible(readline(prompt="Press [enter] to open the webpage of the next product /n"))
+    }
+  } else {
+    print("Can not find the specified product description webpage requested")
+  }
+}

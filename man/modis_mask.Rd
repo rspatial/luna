@@ -32,7 +32,7 @@ Authors
 
 \examples{
 \dontrun{
-f <- "d:/MOD09A1.A2011009.h21v08.006.2015216112834.hdf"
+f <- "MOD09A1.A2011009.h21v08.006.2015216112834.hdf"
 mod <- rast(f)
 shortnames <- substr(names(mod), 86, 120)
 names(mod) <- shortnames

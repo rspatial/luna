@@ -18,11 +18,18 @@
 
 
 .getCleanPath <- function(path) {
-	path <- trimws(path)
-	if (path=="") {
+	
+	if (missing(path)) {
 		path <- tempdir()
 	} 
-	if (substr(path, nchar(path)-1, nchar(path)) == '//' ) {
+  
+  if (path == "") {
+    path <- tempdir()
+  } 
+  
+  path <- trimws(path)
+  
+  if (substr(path, nchar(path)-1, nchar(path)) == '//' ) {
 		p <- substr(path, 1, nchar(path)-2)		
 	} else if (substr(path, nchar(path), nchar(path)) == '/'  | substr(path, nchar(path), nchar(path)) == '\\') {
 		p <- substr(path, 1, nchar(path)-1)
