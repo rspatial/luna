@@ -3,7 +3,7 @@ Type: Package
 Title: Satellite Remote Sensing (Earth Observation) data analysis
 Version: 0.2-2
 Date: 2019-07-23
-Imports: terra, httr
+Imports: terra, httr, readr
 SystemRequirements: C++11
 Author: Aniruddha Ghosh, Alex Mandel, Benson Kenduiywo, Robert Hijmans 
 Maintainer: <r.hijmans@gmail.com>
