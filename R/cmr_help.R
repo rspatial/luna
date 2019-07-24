@@ -29,7 +29,6 @@ getProducts <- function(product = NULL, download = TRUE,...){
   
   #do not add dependencies on raster; less so to functions that are not exported
   # copy the function if we must
-  #path <- raster:::.getDataPath(path)
   
 	filename <- file.path(path,"nasa_earthdata_products.csv")
   

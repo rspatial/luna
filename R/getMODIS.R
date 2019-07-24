@@ -16,7 +16,9 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path,
 	if(missing(aoi)) stop("provide an area of interest")
 	if(download && missing(path)) stop("provide a path for download")
 	path = trimws(path)
-	if (path == "") stop("provide a valid folder name (path)")
+	if (path == "") path=getwd()
+
+	path <- .getCleanPath(path)
 
 	overwrite = FALSE
 

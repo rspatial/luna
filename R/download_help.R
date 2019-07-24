@@ -17,21 +17,20 @@
 }
 
 
-.getDataPath <- function(path) {
+.getCleanPath <- function(path) {
 	path <- trimws(path)
 	if (path=="") {
 		path <- tempdir()
+	} 
+	if (substr(path, nchar(path)-1, nchar(path)) == '//' ) {
+		p <- substr(path, 1, nchar(path)-2)		
+	} else if (substr(path, nchar(path), nchar(path)) == '/'  | substr(path, nchar(path), nchar(path)) == '\\') {
+		p <- substr(path, 1, nchar(path)-1)
 	} else {
-		if (substr(path, nchar(path)-1, nchar(path)) == '//' ) {
-			p <- substr(path, 1, nchar(path)-2)		
-		} else if (substr(path, nchar(path), nchar(path)) == '/'  | substr(path, nchar(path), nchar(path)) == '\\') {
-			p <- substr(path, 1, nchar(path)-1)
-		} else {
-			p <- path
-		}
-		if (!file.exists(p) & !file.exists(path)) {
-			stop('path does not exist: ', path)
-		}
+		p <- path
+	}
+	if (!file.exists(p) & !file.exists(path)) {
+		stop('path does not exist: ', path)
 	}
 	if (substr(path, nchar(path), nchar(path)) != '/' & substr(path, nchar(path), nchar(path)) != '\\') {
 		path <- paste(path, "/", sep="")

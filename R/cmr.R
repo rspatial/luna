@@ -82,19 +82,19 @@ cmr_download <- function(urls, path, username=NULL, password=NULL, overwrite, ..
   # TODO allow in parallel
   # TODO re-use a session
   
-  files <- rep("", length(urls))
-  for (i in 1:length(urls)) {
-    files <- tryCatch(.cmr_download_one(urls[i], path, 
+	files <- rep("", length(urls))
+	for (i in 1:length(urls)) {
+		files <- tryCatch(.cmr_download_one(urls[i], path, 
                                         USERNAME = username, PASSWORD = password,
                                         overwrite = overwrite), 
                       error = function(e){e})
-    if (inherits(files, "error")) {
-      warning("failure:", urls[i])
-    } else {
-      files[i] = urls[i]
-    }
-  }
-  return(files)
+		if (inherits(files, "error")) {
+			warning("failure:", urls[i])
+		} else {
+			files[i] = urls[i]
+		}
+	}
+	return(files)
 }
 
 searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
