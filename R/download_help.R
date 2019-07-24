@@ -55,7 +55,7 @@
 		} else if (inherits(aoi, 'SpatVector')) {
 			aoi <- ext(aoi)
 		} else {
-			aoi <- extent(aoi)
+			aoi <- extent(aoi) #TODO remove raster dependency
 		}
 		aoi <- as.vector(aoi)
 	} else {
