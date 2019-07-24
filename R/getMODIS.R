@@ -27,22 +27,24 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 		print(pp)
 		stop()
 	}
-	cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
+	
   
-  # find product urls
+  # find product urls, does not require credentials
 	fileurls <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 
   # TODO: need a better try-error message for the function
-	if ((length(fileurls) > 0) & download){
-		files <- cmr_download(urls = fileurls, path = path, 
-                 username = cred$user, password = cred$password,
-                 overwrite = overwrite)
-		
-		# rh: is there a better way? 
-		ff <- file.path(path, basename(files))	
-		return(ff)		 
-	} else if (!download) {
-		return(basename(fileurls))
+	if (length(fileurls) > 0) {
+		if (download){
+		  cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
+			files <- cmr_download(urls = fileurls, path = path, 
+					 username = cred$user, password = cred$password,
+					 overwrite = overwrite)			
+			# rh: is there a better way? 
+			ff <- file.path(path, basename(fileurls))	
+			return(ff)		 
+		} else {
+			return(basename(fileurls))
+		}
 	} else {
 		print("No results found")
 		return(NULL)
