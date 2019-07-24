@@ -23,7 +23,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
 	} else if (nrow(pp) > 1) {
-		cat("Multiple sources availble for the requested product; \n p rovide a unique product\n")
+		cat("Multiple sources available:\n")
 		print(pp)
 		stop()
 	}
