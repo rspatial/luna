@@ -6,9 +6,10 @@
 
 
 getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
-                            version = "006", limit = 100000, server = "LPDAAC_ECS", ...) {
+                     version = "006", limit = 100000, server = "LPDAAC_ECS", ...) {
   
 	stopifnot(require(readr))
+	stopifnot(require(httr))
 	
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")
