@@ -20,8 +20,8 @@ showInfo(product)
 \seealso{ \code{\link[luna]{getProducts}}}
 
 \examples{
-  # MODIS in LP DAAC
-  showInfo(product = "MCD18A1", version = "006", server = "LPDAAC_ECS")
+  # MODIS in LP DAAC with version information
+  showInfo(product = "MCD18A1", server = "LPDAAC_ECS", version = "006")
   # Without any version or server information
   showInfo(product = "LANDSAT_SURFACE_REFLECTANCE_L8_OLI_TIRS")
 }

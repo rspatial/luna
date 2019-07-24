@@ -113,26 +113,39 @@ showInfo <- function(product, version, server, ...){
   # get the unique set of information for the product
   pp <- pp[pp$short_name == product, ]
   
+  # for MODIS
+  # ok <- grepl("^MOD|^MYD|^MCD", product)
+  
   # include descripton of products from
   # first condition is specific to MODIS
   if (missing(server) | missing(version)){
     url <- paste0("https://cmr.earthdata.nasa.gov/search/concepts/", unique(pp$concept_id))
+    
   } else if (server == "LPDAAC_ECS" & version == "006") {
     pp <- pp[pp$version == version, ]
     url <- paste0("https://lpdaac.usgs.gov/products/", tolower(unique(pp$short_name)),"v",version)
+
   } else {
     stop("Can not find the requested webpage")
   }
   
   # if multiple urls returned
-  if (length(url) > 0){
-    for (i in 1:length(url)){
-      print(paste0("opening product description webpage of ", pp$short_name[i]))
-      browseURL(url[i])
-      # for multiple webpages
-      #invisible(readline(prompt="Press [enter] to open the webpage of the next product /n"))
-    }
+  if (length(url) == 1 ){
+    print(paste0("opening product description webpage for ", unique(pp$short_name)))
+    browseURL(url)
+      
+  } else if (length(url) > 1){
+      print("More than one product found; refine the product search with additional arguments")
+  
   } else {
     print("Can not find the specified product description webpage requested")
   }
 }
+
+
+# for (i in 1:length(url)){
+#   print(paste0("opening product description webpage of ", pp$short_name[i]))
+#   browseURL(url[i])
+#   # for multiple webpages; fail-safe otherwise it may create serious issues
+#   invisible(readline(prompt="Press [enter] to open the webpage of the next product or "))
+# }
