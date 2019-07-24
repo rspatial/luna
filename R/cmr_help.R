@@ -76,8 +76,8 @@ getCredentials <- function(url = NULL, user = NULL, password = NULL, credfile = 
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
 		if (savecrd) saveCrd(credInfo)
 	} else {
-		paste(url)
-		usr <- readline(paste("username:", url, ": \n"))
+		paste("Credentials for: ", url)
+		usr <- readline(paste("username: \n"))
 		pswd <- readline(paste("password: \n"))
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
 		if (savecrd) saveCrd(credInfo)

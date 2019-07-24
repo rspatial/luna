@@ -55,7 +55,8 @@
 	} else {
 		stopifnot(length(aoi) == 4)
 	}	
-	as.vector(t(matrix(aoi, ncol=2)))	
+	v <- as.vector(t(matrix(aoi, ncol=2)))
+	paste(v, collapse=" ")
 }
 
 
