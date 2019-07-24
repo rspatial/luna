@@ -58,9 +58,9 @@
       #The response was not a csv, we should throw and error?
       break
     }
-    
-  return(results)
+  }
   
+  return(results)
 }
 
 
