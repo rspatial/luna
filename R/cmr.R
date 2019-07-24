@@ -35,10 +35,10 @@
     #unparsed_page = content(response,parsed="application/json")
     # parsing without messages
     # http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
-    if (http_type(response) == "text/csv"){
+    if (httr::http_type(response) == "text/csv"){
       
       # Per httr docs testing for expected type and parsing manually
-      unparsed_page = readr::read_csv(content(response, as="text"))
+      unparsed_page = readr::read_csv(httr::content(response, as="text"))
     
       #TODO: suppress parsing message
       catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
@@ -69,9 +69,9 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
   # :param limit: limit of the number of results
   # :param kwargs ...: search parameters
   # :return: dataframe of results
-  SEARCH_COLLECTION_URL = paste0(cmr_host,"/search/collections")
-  results <- .get_search_results(url=SEARCH_COLLECTION_URL, limit=limit, ...)
-  return(results)
+	SEARCH_COLLECTION_URL = paste0(cmr_host,"/search/collections")
+	results <- .get_search_results(url=SEARCH_COLLECTION_URL, limit=limit, ...)
+	return(results)
 }
 
 .cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, ...){
@@ -111,27 +111,27 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   #:param kwargs: search parameters
   #:return: dataframe of results
   
-  e <- .getExtent(extent)
-  
-  # for testing validity
-  start_date <- as.Date(start_date)
-  end_date <- as.Date(end_date)
-    
-  temporal <- paste0(start_date, datesuffix, ",", end_date, datesuffix)
-  
-  params <- list(
-    short_name=product,	temporal=temporal, downloadable="true", bounding_box=e
-  )
-  
-  pars <- list(...) 
-  if (length(pars) > 0) {
-	  params <- c(params, pars)
-  }
-  
-  cmr_host="https://cmr.earthdata.nasa.gov"
-  url <- paste0(cmr_host,"/search/granules")
-  results <- .get_search_results(url=url, limit=limit, kwargs=params)
-  return(results) 
+	e <- .getExtent(extent)
+	  
+	  # for testing validity
+	start_date <- as.Date(start_date)
+	end_date <- as.Date(end_date)
+		
+	temporal <- paste0(start_date, datesuffix, ",", end_date, datesuffix)
+	  
+	params <- list(
+		short_name=product,	temporal=temporal, downloadable="true", bounding_box=e
+	)
+	  
+	pars <- list(...) 
+	if (length(pars) > 0) {
+		params <- c(params, pars)
+	}
+	  
+	cmr_host="https://cmr.earthdata.nasa.gov"
+	url <- paste0(cmr_host,"/search/granules")
+	results <- .get_search_results(url=url, limit=limit, kwargs=params)
+	return(results) 
 }
 
 # CMR download attempt
