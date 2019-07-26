@@ -6,7 +6,7 @@
 
 
 getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download=FALSE, path="",
-                     version = "006", limit = 100000, server = "AWS", overwrite=FALSE, ...) {
+                     version = "1", limit = 100000, server = "AWS", overwrite=FALSE, ...) {
   
   # Search the CMR for Landsat scenes
   # Currently only supports the download of Landsat 8 from AWS
@@ -24,7 +24,7 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	
 
 	pp <- .humanize(path=path)
-	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
+	pp <- pp[pp$short_name == product & pp$version == version, ]
   
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
@@ -39,8 +39,9 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
+	# TODO: Pass server through to indicate AWS, GCP or USGS - only does AWS now.
 	fileurls <- simplify_urls(results, sat="L8")
-	fileurls <- unique(fileurls)
+
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {

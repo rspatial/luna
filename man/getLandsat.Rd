@@ -43,7 +43,7 @@ sdate <- "2019-05-01"
 edate <- "2019-05-30"
 area <- c(33, 34, -5, -4)
 dir <- tempdir()
-f <- getModis(product = product,
+f <- getLandsat(product = product,
             start_date = sdate, end_date = edate,
             aoi = area, download = FALSE, path=dir)
 }

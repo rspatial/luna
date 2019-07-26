@@ -93,7 +93,7 @@ split_landsat <- function(scene){
   
   #Stop if scene not provided
   
-  root_url <- "landsat-pds.s3.amazonaws.com"
+  root_url <- "https://landsat-pds.s3.amazonaws.com"
   scene = "LC08_L1TP_167056_20190517_20190521_01_T1"
   url_parts <- split_landsat(scene)
   

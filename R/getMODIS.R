@@ -35,7 +35,6 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	
 	# Select out the urls and remove duplicates
 	fileurls <- simplify_urls(results, sat="MODIS")
-	fileurls <- unique(fileurls)
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {

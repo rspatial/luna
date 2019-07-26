@@ -166,11 +166,11 @@ simplify_urls <- function(response_table, sat){
     #"https://landsatonaws.com/L8/025/023/LC08_L1TP_025023_20190717_20190717_01_RT/"
     catcher <- tryCatch(urls <- response_table$`Granule UR`,error=function(e){e})
     sceneID <- catcher[grep("T1$", catcher)]
-    urls <- lapply(sceneID, .find_aws)
+    urls <- unlist(lapply(sceneID, .find_aws))
   } else {
     # TODO: What to do if no urls are found?
     urls <- NULL
   }
 
-  return(urls)
+  return(unique(urls))
 }
