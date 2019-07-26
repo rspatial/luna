@@ -54,6 +54,7 @@
 
 
 .getExtent <- function(aoi) {
+  # Return the extent of an Area Of Interest in a character format for Web API requests
 	if (!is.vector(aoi)) {
 		if (inherits(aoi, 'SpatRaster')) {
 			aoi <- ext(aoi)

@@ -36,10 +36,10 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	
   
   # find product, does not require credentials, returns data frame of csv
-	fileurls <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
-	# TODO: get the url for the appropriate scenes
+	fileurls <- simplify_urls(results)
 	fileurls <- unique(fileurls)
 	
   # TODO: need a better try-error message for the function
@@ -53,6 +53,7 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 			ff <- file.path(path, basename(fileurls))	
 			return(ff)		 
 		} else {
+		  # TODO: return the dataframe of search results instead of just urls?
 			return(basename(fileurls))
 		}
 	} else {
