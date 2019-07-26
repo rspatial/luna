@@ -24,11 +24,19 @@ getProducts <- function(product = NULL, download = TRUE,...){
 # humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
 # use this file to get an updated list of dataset that can searched (not always downloadable) via cmr
 
-.humanize <- function(download = TRUE, path="", ...) {
+
+.humanize <- function(...) {
+	f <- system.file("cmr/cmr_sources.rds", package="luna")
+	d <- readRDS(f)
+	return(d)
+}
+
+
+.oldhumanize <- function(download=TRUE, path="", ...) {
   
   #do not add dependencies on raster; less so to functions that are not exported
   # copy the function if we must
-  path <- .getCleanPath(path)
+	path <- .getCleanPath(path)
   
 	filename <- file.path(path,"nasa_earthdata_products.csv")
   
@@ -45,18 +53,25 @@ getProducts <- function(product = NULL, download = TRUE,...){
 		}
 	}	
 	if (file.exists(filename)) {
-		data <- utils::read.csv(filename, stringsAsFactor=FALSE)
-		return(data)
+		d <- utils::read.csv(filename, stringsAsFactor=FALSE)
+		return(d)	
 	} 	
 }
 
 
 # setup credentials for different services
 # ag: this function should be exposed with a help file
-getCredentials <- function(url = NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, ...) {
+getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, removecred=FALSE, ...) {
+
+	credfile <- path.expand("~/luna_cred.rds")
+	if (removecred) {
+		if (file.exists(credfile)) {
+			file.remove(credfile)
+		} 
+		return()
+	}
 
 	saveCrd <- function(credInfo) {
-		credfile <- path.expand("~/luna_cred.rds")
 		if (file.exists(credfile)) {
 			d <- readRDS(credfile)
 			i <- which(url == d$url) 
@@ -78,16 +93,14 @@ getCredentials <- function(url = NULL, username = NULL, password = NULL, credfil
 		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
 		if (savecred) saveCrd(credInfo)
 	} else {
-		credfile <- path.expand("~/luna_cred.rds")
-		ok <- TRUE
+		ok <- FALSE
 		if (file.exists(credfile)) {
 			credInfo <- readRDS(credfile)
 			credInfo <- credInfo[credInfo$url == url, ]
-			if (nrow(credInfo) == 1) {
-				usr <- credInfo$user
-				pswd <- credInfo$password
-			} else {
-				ok <- FALSE
+			if (nrow(credInfo) > 0) {
+				usr <- credInfo$user[nrow(credInfo)]
+				pswd <- credInfo$password[nrow(credInfo)]
+				ok <- TRUE
 			}
 		}
 		if (!ok) {
@@ -102,44 +115,30 @@ getCredentials <- function(url = NULL, username = NULL, password = NULL, credfil
 }
 
 
-
-
 # Open the product information in a browser
 
-showInfo <- function(product, version, server, ...){
-  
-  pp <- .humanize()
-  
+productInfo <- function(product, ...){
+	pp <- .humanize()
+ 
   # get the unique set of information for the product
-  pp <- pp[pp$short_name == product, ]
-  
+	pp <- pp[pp$short_name == product, ]
+	if (nrow(pp) < 1) {
+		stop("Cannot find the product")
+	}
+	
   # for MODIS
-  # ok <- grepl("^MOD|^MYD|^MCD", product)
+	modis <- grepl("^MOD|^MYD|^MCD", product)
+	if (modis) {
+		#server = "LPDAAC_ECS"
+		url <- paste0("https://lpdaac.usgs.gov/products/", tolower(product),"v006")
+	} else {
+		url <- paste0("https://cmr.earthdata.nasa.gov/search/concepts/", unique(pp$concept_id))
+	} 
   
-  # include descripton of products from
-  # first condition is specific to MODIS
-  if (missing(server) | missing(version)){
-    url <- paste0("https://cmr.earthdata.nasa.gov/search/concepts/", unique(pp$concept_id))
-    
-  } else if (server == "LPDAAC_ECS" & version == "006") {
-    pp <- pp[pp$version == version, ]
-    url <- paste0("https://lpdaac.usgs.gov/products/", tolower(unique(pp$short_name)),"v",version)
-
-  } else {
-    stop("Can not find the requested webpage")
-  }
-  
-  # if multiple urls returned
-  if (length(url) == 1 ){
-    print(paste0("opening product description webpage for ", unique(pp$short_name)))
-    browseURL(url)
-      
-  } else if (length(url) > 1){
-      print("More than one product found; refine the product search with additional arguments")
-  
-  } else {
-    print("Can not find the specified product description webpage requested")
-  }
+	if (length(url) > 0 ){
+		print(paste0("opening product description web page for ", unique(pp$short_name[1])))
+		browseURL(url)	  
+	}
 }
 
 

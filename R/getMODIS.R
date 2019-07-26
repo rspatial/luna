@@ -6,7 +6,7 @@
 
 
 getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
-                     version = "006", limit = 100000, server = "LPDAAC_ECS", ...) {
+                     version = "006", limit = 100000, server = "LPDAAC_ECS", overwrite=FALSE, ...) {
   
 	stopifnot(require(readr))
 	stopifnot(require(httr))
@@ -16,7 +16,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
 	path <- .getCleanPath(path)
-	overwrite <- FALSE
+	
 
 	pp <- .humanize(path=path)
 	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
@@ -37,7 +37,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {
 		if (download){
-		  cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
+			cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
 			files <- cmr_download(urls = fileurls, path = path, 
 					 username = cred$user, password = cred$password,
 					 overwrite = overwrite)			
