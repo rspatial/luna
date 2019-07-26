@@ -31,7 +31,10 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	
   
   # find product urls, does not require credentials
-	fileurls <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	
+	# Select out the urls and remove duplicates
+	fileurls <- simplify_urls(results, sat="MODIS")
 	fileurls <- unique(fileurls)
 	
   # TODO: need a better try-error message for the function

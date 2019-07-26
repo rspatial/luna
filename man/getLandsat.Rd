@@ -14,7 +14,7 @@ getModis(product, start_date, end_date, aoi, download = FALSE, path, version="00
 }
 
 \arguments{
-  \item{product}{character. Supported products can be found using \code{\link{getProducts}}}
+  \item{product}{character. Supported products can be found using \code{\link{getProducts}}, currently limited to Landsat_8_OLI_TIRS_C1}
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
   \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. Or a SpatExtent or Extent object, or any object from which an Extent can be extracted (see examples)}
@@ -38,9 +38,9 @@ If no data is available between \code{start_date} and \code{end_date}, files for
 \seealso{ \code{\link[luna]{getProducts}}}
 
 \examples{  
-product <- "MOD09A1"
-sdate <- "2019-05-17" 
-edate <- "2019-05-23"
+product <- "Landsat_8_OLI_TIRS_C1"
+sdate <- "2019-05-01" 
+edate <- "2019-05-30"
 area <- c(33, 34, -5, -4)
 dir <- tempdir()
 f <- getModis(product = product,

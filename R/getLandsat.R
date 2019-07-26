@@ -39,7 +39,7 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
-	fileurls <- simplify_urls(results)
+	fileurls <- simplify_urls(results, sat="L8")
 	fileurls <- unique(fileurls)
 	
   # TODO: need a better try-error message for the function
