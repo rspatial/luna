@@ -148,3 +148,29 @@ productInfo <- function(product, ...){
 #   # for multiple webpages; fail-safe otherwise it may create serious issues
 #   invisible(readline(prompt="Press [enter] to open the webpage of the next product or "))
 # }
+
+simplify_urls <- function(response_table, sat){
+  # Depending on the type of data requested the url formatting will vary
+  # MODIS the download url is the `Online Access URLs`
+  # Landsat the `Online Access URLs` is a webpage listing options
+  #  1. We could read the page and load those options
+  #  2. We can construct the AWS or Google URL to the same thing
+  #   a. AWS and Google might be per band files instead of a single archive (tar.gz)
+  
+  if (sat == "MODIS"){
+    # TODO: Handle errors from the TryCatch
+    catcher <- tryCatch(urls <- response_table$`Online Access URLs`,error=function(e){e})
+    urls <- catcher
+  } else if (sat == "L8"){
+    # TODO: Handle errors from the TryCatch
+    #"https://landsatonaws.com/L8/025/023/LC08_L1TP_025023_20190717_20190717_01_RT/"
+    catcher <- tryCatch(urls <- response_table$`Granule UR`,error=function(e){e})
+    sceneID <- catcher[grep("T1$", catcher)]
+    urls <- unlist(lapply(sceneID, .find_aws))
+  } else {
+    # TODO: What to do if no urls are found?
+    urls <- NULL
+  }
+
+  return(unique(urls))
+}
