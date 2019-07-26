@@ -6,7 +6,7 @@
 # List different satellite data products that can be searched through CMR
 
 # List all unique products available through CMR
-getProducts <- function(product = NULL, download = TRUE,...){
+getProducts <- function(product = NULL, ...){
    d <- .humanize()
    
    if (length(product) > 1){
@@ -14,10 +14,10 @@ getProducts <- function(product = NULL, download = TRUE,...){
    }
    
    if (!is.null(product)){
-     pp <- d[grep(product,d$short_name), ]
-   } else {
-     return(unique(d$short_name))
+     d <- d[grep(product,d$short_name), ]
    }
+   
+   return(d)
 }
 
 
