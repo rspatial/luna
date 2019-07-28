@@ -24,7 +24,7 @@ character
 \seealso{ \code{\link[luna]{getProducts}}}
 
 \examples{
-  # list of all available MODIS products
-  getProducts("^MOD|^MYD|^MCD")
+# list of all available MODIS products
+getProducts("^MOD|^MYD|^MCD")
 }
 
