@@ -1,12 +1,17 @@
-# List and Download MODIS products
+# List and Download Landsat products
 # Authors: Aniruddha Ghosh, Robert J. Hijmans, Alex Mandel
 # July 2019
 # Version 0.1
 # Licence GPL v3
 
 
-getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
-                     version = "006", limit = 100000, server = "LPDAAC_ECS", overwrite=FALSE, ...) {
+getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download=FALSE, path="",
+                     version = "1", limit = 100000, server = "AWS", overwrite=FALSE, ...) {
+  
+  # Search the CMR for Landsat scenes
+  # Currently only supports the download of Landsat 8 from AWS
+  # TODO: Implement alternate download from Google or EROS USGS for 4,5,7
+  # Takes argument about which bands to download, will vary by Landsat version.
   
 	stopifnot(require(readr))
 	stopifnot(require(httr))
@@ -19,7 +24,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	
 
 	pp <- .humanize(path=path)
-	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
+	pp <- pp[pp$short_name == product & pp$version == version, ]
   
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
@@ -30,11 +35,13 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	}
 	
   
-  # find product urls, does not require credentials
+  # find product, does not require credentials, returns data frame of csv
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
-	fileurls <- simplify_urls(results, sat="MODIS")
+	# TODO: Pass server through to indicate AWS, GCP or USGS - only does AWS now.
+	fileurls <- simplify_urls(results, sat="L8")
+
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {
@@ -47,6 +54,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 			ff <- file.path(path, basename(fileurls))	
 			return(ff)		 
 		} else {
+		  # TODO: return the dataframe of search results instead of just urls?
 			return(basename(fileurls))
 		}
 	} else {

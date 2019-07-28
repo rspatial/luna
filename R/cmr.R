@@ -40,14 +40,15 @@
       # Per httr docs testing for expected type and parsing manually
       unparsed_page = readr::read_csv(httr::content(response, as="text"))
     
-      #TODO: suppress parsing message
+      #Check the URL column is not empty
       catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
   
       if(!inherits(catcher, "error")){
         if(length(urls)==0){
           break
         }
-        results <- c(results,urls)
+        # Append the full table of results
+        results <- rbind(results, unparsed_page)
         page_num <- page_num+1
       } else { 
         break
