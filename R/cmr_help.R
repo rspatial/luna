@@ -63,15 +63,19 @@ getProducts <- function(product = NULL, ...){
 # ag: this function should be exposed with a help file
 getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, removecred=FALSE, ...) {
 
-	credfile <- path.expand("~/luna_cred.rds")
+	defcredfile <- path.expand("~/luna_cred.rds")
+
 	if (removecred) {
+		if (is.null(credfile)) {
+			credfile <- defcredfile
+		}
 		if (file.exists(credfile)) {
 			file.remove(credfile)
 		} 
 		return()
 	}
 
-	saveCrd <- function(credInfo) {
+	saveCrd <- function(credInfo, credfile) {
 		if (file.exists(credfile)) {
 			d <- readRDS(credfile)
 			i <- which(url == d$url) 
@@ -85,12 +89,12 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
   
 	if (!is.null(credfile)) { # it is useful to be able to point to a file
 		credInfo <- readRDS(credfile)
-		usr = credInfo$user
-		pswd = credInfo$password
+		credInfo <- credInfo[credInfo$url == url, , drop=FALSE]
+		if (nrow(credInfo) == 0) {
+			stop("no record for url in supplied credfile")
+		}
 	} else if ((!is.null(username)) && (!is.null(password))) {
-		usr <- username
-		pswd <- password
-		credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+		credInfo <- data.frame(url = url, user = username, password = password, stringsAsFactors = FALSE)
 		if (savecred) saveCrd(credInfo)
 	} else {
 		ok <- FALSE
@@ -98,8 +102,6 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
 			credInfo <- readRDS(credfile)
 			credInfo <- credInfo[credInfo$url == url, ]
 			if (nrow(credInfo) > 0) {
-				usr <- credInfo$user[nrow(credInfo)]
-				pswd <- credInfo$password[nrow(credInfo)]
 				ok <- TRUE
 			}
 		}
