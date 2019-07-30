@@ -61,9 +61,10 @@ getProducts <- function(product = NULL, ...){
 
 # setup credentials for different services
 # ag: this function should be exposed with a help file
-getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, removecred=FALSE, ...) {
+getCredentials <- function(url=NULL, username = NULL, password = NULL, credfileLocal = NULL, savecred=TRUE, removecred=FALSE, ...) {
 
 	credfile <- path.expand("~/luna_cred.rds")
+	
 	if (removecred) {
 		if (file.exists(credfile)) {
 			file.remove(credfile)
@@ -83,10 +84,13 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
 		saveRDS(credInfo, credfile)
 	}
   
-	if (!is.null(credfile)) { # it is useful to be able to point to a file
+	if (!is.null(credfileLocal)) { # it is useful to be able to point to a file
 		credInfo <- readRDS(credfile)
-		usr = credInfo$user
-		pswd = credInfo$password
+		credInfo <- credInfo[credInfo$url == url, ]
+		if (nrow(credInfo) > 0) {
+		  usr <- credInfo$user[nrow(credInfo)]
+		  pswd <- credInfo$password[nrow(credInfo)]
+		}
 	} else if ((!is.null(username)) && (!is.null(password))) {
 		usr <- username
 		pswd <- password
