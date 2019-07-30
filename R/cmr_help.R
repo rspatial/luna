@@ -75,16 +75,17 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
 		return()
 	}
 
-	saveCrd <- function(credInfo, credfile) {
-		if (file.exists(credfile)) {
-			d <- readRDS(credfile)
+	saveCrd <- function(credInfo, crdfile) {
+		if (file.exists(crdfile)) {
+			d <- readRDS(crdfile)
 			i <- which(url == d$url) 
 			credInfo <- rbind(credInfo, d)
 			if (length(i) > 0) {
 				credInfo <- credInfo[-i, ]
 			}
 		}
-		saveRDS(credInfo, credfile)
+		credInfo <- unique(credInfo)
+		saveRDS(credInfo, crdfile)
 	}
   
 	if (!is.null(credfile)) { # it is useful to be able to point to a file
@@ -95,11 +96,11 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
 		}
 	} else if ((!is.null(username)) && (!is.null(password))) {
 		credInfo <- data.frame(url = url, user = username, password = password, stringsAsFactors = FALSE)
-		if (savecred) saveCrd(credInfo)
+		if (savecred) saveCrd(credInfo, defcredfile)
 	} else {
 		ok <- FALSE
-		if (file.exists(credfile)) {
-			credInfo <- readRDS(credfile)
+		if (file.exists(defcredfile)) {
+			credInfo <- readRDS(defcredfile)
 			credInfo <- credInfo[credInfo$url == url, ]
 			if (nrow(credInfo) > 0) {
 				ok <- TRUE
@@ -110,7 +111,7 @@ getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile 
 			usr <- readline(paste("username: \n"))
 			pswd <- readline(paste("password: \n"))
 			credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-			if (savecred) saveCrd(credInfo)
+			if (savecred) saveCrd(credInfo, defcredfile)
 		}
 	}
 	return(credInfo)
