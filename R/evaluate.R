@@ -1,10 +1,9 @@
 
 evaluate <- function(cmat, stat="overall") {
 
-	stopifnot(stat %in% c("kappa", "overall", "user", "producer"))
+	stopifnot(stat %in% c("kappa", "overall", "class"))
 	n <- sum(cmat)
 	d <- diag(cmat)
-
 	if (stat == "kappa") {
 		# observed (true) cases per class
 		p <- rowSums(cmat) / n 
@@ -17,12 +16,12 @@ evaluate <- function(cmat, stat="overall") {
 	} else if (stat == "overall") {
 		OA <- sum(d) / n
 		return(OA)
-	} else if (stat == "user") {
-		user <- d / rowSums(cmat) 
-		return(user)
-	} else if (stat == "producer") {
-		producer <- d / colSums(cmat) 
-		return(producer)
+	} else if (stat == "class") {
+		rw <- d / rowSums(cmat) 
+		cw <- d / colSums(cmat) 
+		x <- rbind(rw, cw)
+		rownames(x) <- c("row-wise", "col-wise")
+		return(x)
 	}
 }
 
