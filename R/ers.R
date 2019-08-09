@@ -2,6 +2,14 @@ library(httr)
 library(xml2)
 
 LOGIN_URL <- "https://ers.cr.usgs.gov/login"
+LOGOUT_URL <- "https://ers.cr.usgs.gov/logout"
+HANDLE <- "https://usgs.gov"
+
+.verify <- function(response){
+  # Verify a response by saving the html so a person can look at it
+  xml2::write_html( content(response, as="parsed"), "local_test/check.html")
+  browseURL("local_test/check.html")
+}
 
 find_token <- function(){
   # Scrape a csrf token from the login page to allow login
@@ -28,11 +36,13 @@ login_ers <- function(user, passw, csrf){
     password = passw,
     csrf_token = find_token()
   )
-  response <- httr::POST(LOGIN_URL, body=params, encode="form", verbose(info=TRUE, ssl=TRUE))
-  
-  # Verify
-  #xml2::write_html( content(response, as="parsed"), "local_test/check.html")
-  
+  response <- httr::POST(LOGIN_URL, body=params, encode="form", verbose(info=TRUE, ssl=TRUE), handle = HANDLE)
+
+}
+
+logout_ers <- function(){
+  # Logout function
+  response <- httr::GET(LOGIN_URL, verbose(), handle = HANDLE)
 }
 
 find_url <- function(scene){
@@ -41,7 +51,8 @@ find_url <- function(scene){
 
 get_files <- function(scene_url){
   # Download a scene from Earth Explorer
+  # How to reuse the session cookie?
   scene_url <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
-  response <- httr::GET(scene_url, httr::progress(), httr::write_disk("/tmp/LC08api.tar"))
+  response <- httr::GET(scene_url, httr::progress(), httr::write_disk("/tmp/LC08api2.tar"), verbose(), handle = HANDLE)
   
 }
