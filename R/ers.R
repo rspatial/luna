@@ -1,3 +1,5 @@
+# Functions for gettings data from Earth Explorer with regular login
+
 library(httr)
 library(xml2)
 
