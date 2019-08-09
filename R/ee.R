@@ -45,14 +45,18 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
 }
 
 .get_ee_downurl <- function(datasetName, entityIds, token){
+  # Queries EE for the what the actual download url of a particular file is.
   params <- list(
     datasetName = "ARD_TILE",
     entityIds = "LC08_CU_002008_20190503_20190523_C01_V01",
     apiKey = token
   )
   
-  durl_get <- httr::GET(downloadopt_url, query=.make_params(params)) #Does this work?
+  durl <- httr::GET(downloadopt_url, query=.make_params(params)) #Does this work?
   #durl_post <- httr::POST(downloadopt_url, body=json_params, content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
+  
+  #TODO return the url to the file
+  #fileurl <- content(durl)
 }
 
 
@@ -66,12 +70,15 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
   fileurl <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   #check <- httr::POST(fileurl, body=json_params, content_type("application/x-www-form-urlencoded"), httr::progress())
   # TODO: Set the file name based on the scene name, and the content type in the headers
+  name_file <- "/tmp/LC08api.tar"
   check <- httr::GET(fileurl, 
                      #verbose(info=TRUE),
                      query=.make_params(params), 
                      httr::progress(), 
-                     httr::write_disk("/tmp/LC08api.tar")
+                     httr::write_disk(name_file)
                      )
+  # TODO: verify the size of the file
+  return(name_file)
 }
 
 
