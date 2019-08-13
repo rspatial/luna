@@ -48,12 +48,12 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   # Queries EE for the what the actual download url of a particular file is.
   params <- list(
     datasetName = "ARD_TILE",
-    entityIds = "LC08_CU_002008_20190503_20190523_C01_V01",
+    entityIds = "LC08_CU_004010_20140101_C01_V01",
     apiKey = token
   )
   
-  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params), verbose()) #Does this work?
-  durl_post <- httr::POST(DOWNLOADOPT_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
+  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params))
+  #durl_post <- httr::POST(DOWNLOADOPT_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
   #TODO return the url to the file
   #fileurl <- content(durl)
@@ -61,13 +61,13 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
 
 
 .download_ee <- function(fileurl, token){
-  # Try downloading a file
+  # Try downloading a file given the downloadOptions$url from get_ee_downurl
   
   params <- list(
     apiKey=token
   )
   
-  fileurl <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
+  #fileurl <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   #check <- httr::POST(fileurl, body=json_params, content_type("application/x-www-form-urlencoded"), httr::progress())
   # TODO: Set the file name based on the scene name, and the content type in the headers
   name_file <- "/tmp/LC08api.tar"
@@ -82,7 +82,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
 }
 
 
-.search_ee <- function(token){
+.search_ee <- function(token, datasetName, ){
   # Search Earth Explorer for data
   
   # TODO: implement a function to build up the temporal, spatial and other filters to the correct format
@@ -90,8 +90,8 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
     apiKey = token, 
     datasetName = "ARD_TILE",
     temporalFilter = list(
-      startDate= "2006-01-01",
-      endDate= "2006-02-01"
+      startDate= "2014-01-01",
+      endDate= "2014-02-01"
     ),
     maxResults = 5
   )
@@ -105,8 +105,24 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   #sdata <- httr::POST(search_url, body=json_params, content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
   # TODO: check if download is TRUE, otherwise might need to submit an order
+  
+  # TODO: Return the entityID to be passed to downloadoptions
+  djson <- .is_json(sdata)
+  records <- djson[["data"]][["results"]]
+  entities <- sapply(records, function(x){ x[["entityId"]]})
+  
+  return()
 }
 
+.is_json <- function(response){
+  #Check that a response is json and parse it
+  if (httr::http_type(response) == "application/json")  {
+    parsed <- httr::content(sdata, as="parsed")    
+  } else {
+    print("Response was not json")
+    # TODO: handle things like errors.
+  }
+}
 
 
 
