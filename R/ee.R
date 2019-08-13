@@ -6,10 +6,10 @@ library(httr)
 library(jsonlite)
 
 URL <- "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0"
-LOGIN_URL <- file.path(url, "login")
-LOGOUT_URL <- file.path(url, "logout")
-SEARCH_URL <- file.path(url, "search")
-DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
+LOGIN_URL <- file.path(URL, "login")
+LOGOUT_URL <- file.path(URL, "logout")
+SEARCH_URL <- file.path(URL, "search")
+DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
 
 .make_params <- function(params){
   # EE API requires a very specific format for parameters to the api, 
@@ -25,7 +25,7 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
     password = PASSWORD,
     catalogId = "EE"
   )
-  auth <- httr::POST(login_url, body=.make_params(params), content_type("application/x-www-form-urlencoded"))
+  auth <- httr::POST(LOGIN_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"))
   
   #TODO: Check the http status
   token <- content(auth)$data  
@@ -39,7 +39,7 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
     apiKey=token
   )
   
-  logout <- httr::GET(logout_url, query=.make_params(params))
+  logout <- httr::GET(LOGOUT_URL, query=.make_params(params))
   #TODO: Check the http status
   # TODO: If error api_version is 1.3.0, if works 1.4.0
 }
@@ -52,7 +52,7 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
     apiKey = token
   )
   
-  durl <- httr::GET(downloadopt_url, query=.make_params(params)) #Does this work?
+  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params)) #Does this work?
   #durl_post <- httr::POST(downloadopt_url, body=json_params, content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
   #TODO return the url to the file
@@ -97,7 +97,7 @@ DOWNLOADOPT_URL <- file.path(url, "downloadoptions")
   )
   
   # GET works now that the query is used to send params
-  sdata <- httr::GET(search_url,
+  sdata <- httr::GET(SEARCH_URL,
                      #verbose(info=TRUE),
                      query=.make_params(params)
   )
