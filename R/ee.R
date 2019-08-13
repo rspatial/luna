@@ -29,7 +29,15 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   auth <- httr::POST(LOGIN_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"))
   
   #TODO: Check the http status
-  token <- content(auth)$data  
+  # If you ar approved 
+  auth_data <- .is_json(auth)
+  if (!(auth_data$access_level == "approved")){
+      print("You need API access approval, opening website to request")
+      browseURL("https://ers.cr.usgs.gov/profile/access")
+      # TODO: return error and exit
+      # Other possible checks, api version is 1.3.0, access_level is guest
+  }
+  token <- auth_data$data
   return(token)
 }
 
@@ -45,7 +53,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   # TODO: If error api_version is 1.3.0, if works 1.4.0
 }
 
-.get_ee_downurl <- function(datasetName, entityIds, token){
+.get_ee_downurl <- function(entityIds, datasetName, token){
   # Queries EE for the what the actual download url of a particular file is.
   params <- list(
     datasetName = "ARD_TILE",
@@ -66,7 +74,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
 }
 
 
-.download_ee <- function(fileurl, token){
+.download_ee <- function(fileurl, entityId, token, size){
   # Try downloading a file given the downloadOptions$url from get_ee_downurl
   
   params <- list(
@@ -76,14 +84,20 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   #fileurl <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   #check <- httr::POST(fileurl, body=json_params, content_type("application/x-www-form-urlencoded"), httr::progress())
   # TODO: Set the file name based on the scene name, and the content type in the headers
-  name_file <- "/tmp/LC08api.tar"
+  name_file <- file.path("/tmp", entityId) # TODO, how to know the extension
   check <- httr::GET(fileurl, 
                      #verbose(info=TRUE),
                      query=.make_params(params), 
                      httr::progress(), 
                      httr::write_disk(name_file)
                      )
-  # TODO: verify the size of the file
+  if (file.size(name_file)==size){
+    # TODO: verify the size of the file
+    # Move the file to the final destination
+    # TODO: Many of these files will by .tar, should we open those?
+  }
+
+  # return the final save location of the file
   return(name_file)
 }
 
@@ -143,3 +157,18 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   return(dfitems)
 }
 
+download_ee <- function(product, entityIds_all, user, passw){
+  # Given the Scenes are identified via CMR, lookup the url and download
+
+  # TODO: Make sure you have a valid session token
+  # They are good for about an hour without usage, otherwise they time out
+  token <- .login_ee(USERNAME=user, PASSWORD=passw)
+  
+  # Then query the downloadOptions
+  all_urls <- lapply(entityIds_all, .get_ee_downurl, datasetName = product, token = token)
+  
+  for (each in all_urls){
+    .download_ee(fileurl = each$url, token = token, size = each$filesize)  
+  }
+  
+}
