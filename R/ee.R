@@ -52,8 +52,8 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
     apiKey = token
   )
   
-  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params)) #Does this work?
-  #durl_post <- httr::POST(downloadopt_url, body=json_params, content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
+  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params), verbose()) #Does this work?
+  durl_post <- httr::POST(DOWNLOADOPT_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
   #TODO return the url to the file
   #fileurl <- content(durl)
