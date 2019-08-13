@@ -4,6 +4,7 @@
 
 library(httr)
 library(jsonlite)
+#library(sf)
 
 URL <- "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0"
 LOGIN_URL <- file.path(URL, "login")
@@ -55,8 +56,13 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params))
   #durl_post <- httr::POST(DOWNLOADOPT_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
-  #TODO return the url to the file
-  #fileurl <- content(durl)
+  djson <- .is_json(durl)
+  record <- djson[["data"]][[1]][["downloadOptions"]]
+  list_results <- lapply(record, .jsonlist_sf)
+  results <- do.call(rbind, list_results)
+  
+  #results$url will get you the url, however check the $available first
+  return(results)
 }
 
 
@@ -109,20 +115,31 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   # TODO: Return the entityID to be passed to downloadoptions
   djson <- .is_json(sdata)
   records <- djson[["data"]][["results"]]
-  entities <- sapply(records, function(x){ x[["entityId"]]})
+  list_results <- lapply(records, .jsonlist_sf)
+  #entities <- sapply(records, function(x){ x[["entityId"]]})
+  results <- do.call(rbind, list_results)
   
-  return()
+  # Use the $entityId for the next step
+  return(results)
 }
 
 .is_json <- function(response){
   #Check that a response is json and parse it
   if (httr::http_type(response) == "application/json")  {
-    parsed <- httr::content(sdata, as="parsed")    
+    parsed <- httr::content(response, as="parsed")    
   } else {
     print("Response was not json")
     # TODO: handle things like errors.
   }
 }
 
-
+.jsonlist_sf <- function(jslist){
+  # Give a nested list item, convert to a single dataframe row
+  items <- names(jslist)
+  footprint_sel <- items=="spatialFootprint"
+  # TODO: Convert footprint to spatial object if you want to know the actual geom
+  dfitems <- as.data.frame(t(jslist[!footprint_sel]), stringsAsFactors = FALSE)
+  
+  return(dfitems)
+}
 
