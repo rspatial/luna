@@ -103,7 +103,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
 }
 
 
-.search_ee <- function(token, datasetName, ){
+.search_ee <- function(token, datasetName, ...){
   # Search Earth Explorer for data
   
   # TODO: implement a function to build up the temporal, spatial and other filters to the correct format

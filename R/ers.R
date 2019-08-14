@@ -22,11 +22,11 @@ HANDLE <- httr::handle(DOMAIN)
   # We reset the cookies every time we login, to make sure we get a fresh session.
   handle_reset(DOMAIN)
   
-  response <- httr::GET("https://ers.cr.usgs.gov/", verbose(), handle=HANDLE)
+  response <- httr::GET("https://ers.cr.usgs.gov/", handle=HANDLE)
 
   if (response$status_code == 200){
     # Search the response content for the csrf
-    contents <- content(response, as = "parsed", type = "text/html")
+    contents <- xml2::read_html(content(response, as = "text"))
     inputs <- xml2::xml_find_all(contents, "//input")
     csrf <- xml_attr(inputs[grep("csrf_token", inputs)], "value")
     return(csrf)
@@ -38,9 +38,9 @@ HANDLE <- httr::handle(DOMAIN)
 
 }
 
-.login_ers <- function(user, passw, csrf){
+.login_ers <- function(user, passw){
   # Login to USGS ERS system and return an authentication cookie
-  csrf <- find_token()
+  csrf <- .find_token()
   
   params <- list(
     csrf_token = csrf,
@@ -69,18 +69,18 @@ HANDLE <- httr::handle(DOMAIN)
 
 .logout_ers <- function(){
   # Logout function
-  response <- httr::GET(LOGOUT_URL, verbose(), handle = HANDLE)
+  response <- httr::GET(LOGOUT_URL, handle = HANDLE)
 }
 
-find_durls <- function(scene_browse){
+find_durls_ers <- function(scene_browse){
   # Scrape the Download URL for the actual urls to files
   # TODO: How do we want to take in the items that need to found, results of CMR or EE search 
   #list_url <- "https://earthexplorer.usgs.gov/download/external/options/LANDSAT_8_C1/LC81710582019149LGN00/INVSVC/"
   response <- httr::GET(scene_browse)
   if (response$status_code == 200){
     # Search the response content for the csrf
-    contents <- content(response, as = "parsed", type = "text/html")
-    inputs <- xml2::xml_find_all(contents, "//div[@id='optionsPage']/div/div")
+    contents <- xml2::read_html(content(response, as = "text"))
+    inputs <- xml2::xml_find_all(contents, "//div[@id='optionsPage']/div/div/input")
     onclicks <- xml_attr(inputs, "onclick")
     durls <- gsub("'","",sapply(strsplit(onclicks, "="), `[`, 2))
     # Usually there is more than 1 file, the user needs to decide which files they want
@@ -88,16 +88,40 @@ find_durls <- function(scene_browse){
   }
 }
 
-get_files <- function(scene_url){
-  # Download a scene from Earth Explorer
-  # TODO: Download to tmp directory, rename file to correct name upon moving to final location
-  # TODO: get the file type and size from the header
+.get_files_ers <- function(scene_url, ...){
+  # Download a scene from Earth Explorer, must call .login_ers before using
   #scene_url <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
-  response <- httr::GET(scene_url, httr::progress(), httr::write_disk("/tmp/LC08api2-2.tar"), handle = HANDLE)
   
+  tmp <- tempfile()
+
+  response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = HANDLE)
+  
+  # Get the file type, size, and name from the header
+  filename <- unlist(strsplit(httr::headers(response)$`content-disposition`, "="))[2]
   size_check <- httr::headers(response)$`content-length`
   content_check <- httr::http_type(response) #Note a zip from USGS could mean a .tar or tar.gz
+  # TODO: check the size and content
   
-  # TODO: return the path to the actual files final location
-  return(TRUE)
+  fullpath <- "/tmp" # The outpu directory, should come from user.
+  final_path <- file.path(fullpath, filename)
+  
+  # Download to tmp directory, rename file to correct name upon moving to final location
+  file.rename(tmp, final_path )
+  
+  return(final_path)
+}
+
+download_ers <- function(scenes){
+  # Should credentials be passed in?
+  cred <- getCredentials(url=MAIN_URL, ...)
+  
+  # find the urls without auth, based on the known scene urls
+  durls <- lapply(scenes, find_durls_ers)
+  
+  # login an get a session
+  .login_ers(user=cred$user, passw=cred$password)
+  
+  outfiles <- lapply(durls, .get_files_ers)
+  
+  .logout_ers()
 }
