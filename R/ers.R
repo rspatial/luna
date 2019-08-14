@@ -3,11 +3,11 @@
 library(httr)
 library(xml2)
 
-MAIN_URL <- "https://ers.cr.usgs.gov"
-LOGIN_URL <- file.path(MAIN_URL, "login/")
-LOGOUT_URL <- file.path(MAIN_URL, "logout")
-DOMAIN <- "https://usgs.gov"
-HANDLE <- httr::handle(DOMAIN)
+ERS_MAIN_URL <- "https://ers.cr.usgs.gov"
+ERS_LOGIN_URL <- file.path(ERS_MAIN_URL, "login/")
+ERS_LOGOUT_URL <- file.path(ERS_MAIN_URL, "logout")
+ERS_DOMAIN <- "https://usgs.gov"
+HANDLE <- httr::handle(ERS_DOMAIN)
 
 .verify <- function(response){
   # Verify a response by saving the html so a person can look at it
@@ -20,9 +20,9 @@ HANDLE <- httr::handle(DOMAIN)
   # Scrape a csrf token from the login page to allow login
   
   # We reset the cookies every time we login, to make sure we get a fresh session.
-  handle_reset(DOMAIN)
+  handle_reset(ERS_DOMAIN)
   
-  response <- httr::GET("https://ers.cr.usgs.gov/", handle=HANDLE)
+  response <- httr::GET("https://ers.cr.usgs.gov/", handle=ERS_HANDLE)
 
   if (response$status_code == 200){
     # Search the response content for the csrf
@@ -48,7 +48,7 @@ HANDLE <- httr::handle(DOMAIN)
     password = passw
   )
   
-  response <- httr::POST(LOGIN_URL, body=params, encode="form", handle = HANDLE)
+  response <- httr::POST(LOGIN_URL, body=params, encode="form", handle = ERS_HANDLE)
   
   if (response$status_code == 200){
     html <- content(response, as="text")
@@ -69,7 +69,9 @@ HANDLE <- httr::handle(DOMAIN)
 
 .logout_ers <- function(){
   # Logout function
-  response <- httr::GET(LOGOUT_URL, handle = HANDLE)
+  response <- httr::GET(LOGOUT_URL, handle = ERS_HANDLE)
+  handle_reset(ERS_DOMAIN)
+  return(response)
 }
 
 find_durls_ers <- function(scene_browse){
@@ -94,7 +96,7 @@ find_durls_ers <- function(scene_browse){
   
   tmp <- tempfile()
 
-  response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = HANDLE)
+  response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = ERS_HANDLE)
   
   # Get the file type, size, and name from the header
   filename <- unlist(strsplit(httr::headers(response)$`content-disposition`, "="))[2]
@@ -113,7 +115,7 @@ find_durls_ers <- function(scene_browse){
 
 download_ers <- function(scenes){
   # Should credentials be passed in?
-  cred <- getCredentials(url=MAIN_URL, ...)
+  cred <- getCredentials(url=ERS_MAIN_URL, ...)
   
   # find the urls without auth, based on the known scene urls
   durls <- lapply(scenes, find_durls_ers)
