@@ -13,8 +13,8 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
   # TODO: Implement alternate download from Google or EROS USGS for 4,5,7
   # Takes argument about which bands to download, will vary by Landsat version.
   
-	stopifnot(require(readr))
-	stopifnot(require(httr))
+	#stopifnot(require(readr))
+	#stopifnot(require(httr))
 	
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")

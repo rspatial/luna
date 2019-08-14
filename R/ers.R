@@ -4,7 +4,7 @@
 .ERS_LOGIN_URL <- file.path(.ERS_MAIN_URL, "login/")
 .ERS_LOGOUT_URL <- file.path(.ERS_MAIN_URL, "logout")
 .ERS_DOMAIN <- "https://usgs.gov"
-.HANDLE <- httr::handle(.ERS_DOMAIN)
+.ERS_HANDLE <- httr::handle(.ERS_DOMAIN)
 
 .verify <- function(response){
   # Verify a response by saving the html so a person can look at it
@@ -23,9 +23,9 @@
 
   if (response$status_code == 200){
     # Search the response content for the csrf
-    contents <- xml2::read_html(content(response, as = "text"))
+    contents <- xml2::read_html(httr::content(response, as = "text"))
     inputs <- xml2::xml_find_all(contents, "//input")
-    csrf <- xml_attr(inputs[grep("csrf_token", inputs)], "value")
+    csrf <- xml2::xml_attr(inputs[grep("csrf_token", inputs)], "value")
     return(csrf)
     
   } else {
@@ -66,7 +66,7 @@
 
 .logout_ers <- function(){
   # Logout function
-  response <- httr::GET(.LOGOUT_URL, handle = .ERS_HANDLE)
+  response <- httr::GET(.ERS_LOGOUT_URL, handle = .ERS_HANDLE)
   httr::handle_reset(.ERS_DOMAIN)
   return(response)
 }
