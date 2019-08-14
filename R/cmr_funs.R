@@ -140,7 +140,7 @@ productInfo <- function(product, ...){
   
 	if (length(url) > 0 ){
 		print(paste0("opening product description web page for ", unique(pp$short_name[1])))
-		browseURL(url)	  
+		utils::browseURL(url)	  
 	}
 }
 

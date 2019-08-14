@@ -1,28 +1,25 @@
 # Functions for gettings data from Earth Explorer with regular login
 
-library(httr)
-library(xml2)
-
-ERS_MAIN_URL <- "https://ers.cr.usgs.gov"
-ERS_LOGIN_URL <- file.path(ERS_MAIN_URL, "login/")
-ERS_LOGOUT_URL <- file.path(ERS_MAIN_URL, "logout")
-ERS_DOMAIN <- "https://usgs.gov"
-HANDLE <- httr::handle(ERS_DOMAIN)
+.ERS_MAIN_URL <- "https://ers.cr.usgs.gov"
+.ERS_LOGIN_URL <- file.path(.ERS_MAIN_URL, "login/")
+.ERS_LOGOUT_URL <- file.path(.ERS_MAIN_URL, "logout")
+.ERS_DOMAIN <- "https://usgs.gov"
+.HANDLE <- httr::handle(.ERS_DOMAIN)
 
 .verify <- function(response){
   # Verify a response by saving the html so a person can look at it
   tmp_html <- "tmp/check.html" 
-  xml2::write_html( content(response, as="parsed"), tmp_html)
-  browseURL(tmp_html)
+  xml2::write_html(httr::content(response, as="parsed"), tmp_html)
+  utils::browseURL(tmp_html)
 }
 
 .find_token <- function(){
   # Scrape a csrf token from the login page to allow login
   
   # We reset the cookies every time we login, to make sure we get a fresh session.
-  handle_reset(ERS_DOMAIN)
+  httr::handle_reset(.ERS_DOMAIN)
   
-  response <- httr::GET("https://ers.cr.usgs.gov/", handle=ERS_HANDLE)
+  response <- httr::GET("https://ers.cr.usgs.gov/", handle=.ERS_HANDLE)
 
   if (response$status_code == 200){
     # Search the response content for the csrf
@@ -48,10 +45,10 @@ HANDLE <- httr::handle(ERS_DOMAIN)
     password = passw
   )
   
-  response <- httr::POST(LOGIN_URL, body=params, encode="form", handle = ERS_HANDLE)
+  response <- httr::POST(.ERS_LOGIN_URL, body=params, encode="form", handle = .ERS_HANDLE)
   
   if (response$status_code == 200){
-    html <- content(response, as="text")
+    html <- httr::content(response, as="text")
     # Check that it logged in by looking for the Sign Out button
     if (grep("Sign Out", html)){
       
@@ -69,8 +66,8 @@ HANDLE <- httr::handle(ERS_DOMAIN)
 
 .logout_ers <- function(){
   # Logout function
-  response <- httr::GET(LOGOUT_URL, handle = ERS_HANDLE)
-  handle_reset(ERS_DOMAIN)
+  response <- httr::GET(.LOGOUT_URL, handle = .ERS_HANDLE)
+  httr::handle_reset(.ERS_DOMAIN)
   return(response)
 }
 
@@ -81,9 +78,9 @@ find_durls_ers <- function(scene_browse){
   response <- httr::GET(scene_browse)
   if (response$status_code == 200){
     # Search the response content for the csrf
-    contents <- xml2::read_html(content(response, as = "text"))
+    contents <- xml2::read_html(httr::content(response, as = "text"))
     inputs <- xml2::xml_find_all(contents, "//div[@id='optionsPage']/div/div/input")
-    onclicks <- xml_attr(inputs, "onclick")
+    onclicks <- xml2::xml_attr(inputs, "onclick")
     durls <- gsub("'","",sapply(strsplit(onclicks, "="), `[`, 2))
     # Usually there is more than 1 file, the user needs to decide which files they want
     return(durls)
@@ -96,7 +93,7 @@ find_durls_ers <- function(scene_browse){
   
   tmp <- tempfile()
 
-  response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = ERS_HANDLE)
+  response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = .ERS_HANDLE)
   
   # Get the file type, size, and name from the header
   filename <- unlist(strsplit(httr::headers(response)$`content-disposition`, "="))[2]
@@ -115,7 +112,7 @@ find_durls_ers <- function(scene_browse){
 
 download_ers <- function(scenes){
   # Should credentials be passed in?
-  cred <- getCredentials(url=ERS_MAIN_URL, ...)
+  cred <- getCredentials(url=.ERS_MAIN_URL)
   
   # find the urls without auth, based on the known scene urls
   durls <- lapply(scenes, find_durls_ers)
@@ -126,4 +123,6 @@ download_ers <- function(scenes){
   outfiles <- lapply(durls, .get_files_ers)
   
   .logout_ers()
+  
+  return(outfiles)
 }

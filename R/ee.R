@@ -4,20 +4,16 @@
 # Documnentation of API (requires login)
 # https://earthexplorer.usgs.gov/inventory/documentation/json-api
 
-library(httr)
-library(jsonlite)
-#library(sf)
-
-URL <- "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0"
-LOGIN_URL <- file.path(URL, "login")
-LOGOUT_URL <- file.path(URL, "logout")
-SEARCH_URL <- file.path(URL, "search")
-DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
+.EE_API_URL <- "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0"
+.EE_API_LOGIN_URL <- file.path(.EE_API_URL, "login")
+.EE_API_LOGOUT_URL <- file.path(.EE_API_URL, "logout")
+.EE_API_SEARCH_URL <- file.path(.EE_API_URL, "search")
+.EE_API_DOWNLOADOPT_URL <- file.path(.EE_API_URL, "downloadoptions")
 
 .make_params <- function(params){
   # EE API requires a very specific format for parameters to the api, 
   # json inside a query object or body
-  json_params <- paste("jsonRequest=",toJSON(params, auto_unbox = TRUE),sep="")
+  json_params <- paste("jsonRequest=",jsonlite::toJSON(params, auto_unbox = TRUE),sep="")
   return(json_params)
 }
 
@@ -28,14 +24,14 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
     password = PASSWORD,
     catalogId = "EE"
   )
-  auth <- httr::POST(LOGIN_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"))
+  auth <- httr::POST(.EE_API_LOGIN_URL, body=.make_params(params), httr::content_type("application/x-www-form-urlencoded"))
   
   #TODO: Check the http status
   # If you ar approved 
   auth_data <- .is_json(auth)
   if (!(auth_data$access_level == "approved")){
       print("You need API access approval, opening website to request")
-      browseURL("https://ers.cr.usgs.gov/profile/access")
+      utils::browseURL("https://ers.cr.usgs.gov/profile/access")
       # TODO: return error and exit
       # Other possible checks, api version is 1.3.0, access_level is guest
   }
@@ -50,7 +46,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
     apiKey=token
   )
   
-  logout <- httr::GET(LOGOUT_URL, query=.make_params(params))
+  logout <- httr::GET(.EE_API_LOGOUT_URL, query=.make_params(params))
   #TODO: Check the http status
   # TODO: If error api_version is 1.3.0, if works 1.4.0
 }
@@ -63,7 +59,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
     apiKey = token
   )
   
-  durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params))
+  durl <- httr::GET(.EE_API_DOWNLOADOPT_URL, query=.make_params(params))
   
   djson <- .is_json(durl)
   record <- djson[["data"]][[1]][["downloadOptions"]]
@@ -118,7 +114,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   )
   
   # GET works now that the query is used to send params
-  sdata <- httr::GET(SEARCH_URL,
+  sdata <- httr::GET(.EE_API_SEARCH_URL,
                      #verbose(info=TRUE),
                      query=.make_params(params)
   )
