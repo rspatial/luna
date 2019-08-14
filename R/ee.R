@@ -1,6 +1,8 @@
 # Functions for getting data from Earth Explorer API
 # Requires machine to machine API approval
 # https://ers.cr.usgs.gov/profile/access
+# Documnentation of API (requires login)
+# https://earthexplorer.usgs.gov/inventory/documentation/json-api
 
 library(httr)
 library(jsonlite)
@@ -62,7 +64,6 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
   )
   
   durl <- httr::GET(DOWNLOADOPT_URL, query=.make_params(params))
-  #durl_post <- httr::POST(DOWNLOADOPT_URL, body=.make_params(params), content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
   
   djson <- .is_json(durl)
   record <- djson[["data"]][[1]][["downloadOptions"]]
@@ -121,8 +122,7 @@ DOWNLOADOPT_URL <- file.path(URL, "downloadoptions")
                      #verbose(info=TRUE),
                      query=.make_params(params)
   )
-  # POST works
-  #sdata <- httr::POST(search_url, body=json_params, content_type("application/x-www-form-urlencoded"), verbose(info=TRUE, ssl=TRUE))
+  
   
   # TODO: check if download is TRUE, otherwise might need to submit an order
   
