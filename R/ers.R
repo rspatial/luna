@@ -3,9 +3,11 @@
 library(httr)
 library(xml2)
 
-LOGIN_URL <- "https://ers.cr.usgs.gov"
-LOGOUT_URL <- "https://ers.cr.usgs.gov/logout"
-HANDLE <- httr::handle("https://usgs.gov")
+MAIN_URL <- "https://ers.cr.usgs.gov"
+LOGIN_URL <- file.path(MAIN_URL, "login/")
+LOGOUT_URL <- file.path(MAIN_URL, "logout")
+DOMAIN <- "https://usgs.gov"
+HANDLE <- httr::handle(DOMAIN)
 
 .verify <- function(response){
   # Verify a response by saving the html so a person can look at it
@@ -16,8 +18,10 @@ HANDLE <- httr::handle("https://usgs.gov")
 find_token <- function(){
   # Scrape a csrf token from the login page to allow login
   
+  handle_reset(DOMAIN)
+  
   #TODO: not reuse an existing session, since we need a fresh csrf token
-  response <- httr::GET("https://ers.cr.usgs.gov", verbose(), config(forbid_reuse = 1))
+  response <- httr::GET("https://ers.cr.usgs.gov/", verbose(), handle=HANDLE)
 
   if (response$status_code == 200){
     # Search the response content for the csrf
@@ -38,12 +42,30 @@ login_ers <- function(user, passw, csrf){
   csrf <- find_token()
   
   params <- list(
+    csrf_token = csrf,
     username = user,
-    password = passw,
-    csrf_token = csrf
+    password = passw
   )
+  
   response <- httr::POST(LOGIN_URL, body=params, encode="form", verbose(info=TRUE, ssl=TRUE), handle = HANDLE)
   #response <- httr::POST(LOGIN_URL, body=params, handle = HANDLE, verbose(info=TRUE, ssl=TRUE))
+  
+  if (response$status_code == 200){
+    html <- content(response, as="text")
+    # Check that it logged in by looking for the Sign Out button
+    if (grep("Sign Out", html)){
+      
+      return(TRUE)
+    } else {
+      print("Login failed, please verify you have a working account.")
+      return(FALSE)
+    }
+  } else {
+    print("Please verify the website is up.")
+    return(FALSE)
+  }
+  
+
 }
 
 logout_ers <- function(){
@@ -53,6 +75,9 @@ logout_ers <- function(){
 
 find_url <- function(scene){
   # Scrape the Download URL for the actual urls to files
+  # May not require login
+  list_url <- "https://earthexplorer.usgs.gov/download/external/options/LANDSAT_8_C1/LC81710582019149LGN00/INVSVC/"
+  
 }
 
 get_files <- function(scene_url){
