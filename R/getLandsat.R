@@ -40,17 +40,25 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	
 	# Select out the urls and remove duplicates
 	# TODO: Pass server through to indicate AWS, GCP or USGS - only does AWS now.
+	# TODO: For ERS results hit the find_durls_ers to get the actual file urls
 	fileurls <- simplify_urls(results, sat="L8")
 
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {
 		if (download){
-			cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
-			files <- cmr_download(urls = fileurls, path = path, 
-					 username = cred$user, password = cred$password,
-					 overwrite = overwrite)			
-			# rh: is there a better way? 
+		  # rh: is there a better way? 
+		  if(server=="AWS"){
+		    files <- cmr_download(urls = fileurls, path = path,
+		                          overwrite = overwrite
+		                          )			
+		  } else if (server=="ERS"){
+		    files <- download_ers(scenes = fileurls, path = path, 
+		                          overwrite = overwrite
+		                          )
+			}
+			
+		  # TODO: This is going to return junk names for things from ERS 
 			ff <- file.path(path, basename(fileurls))	
 			return(ff)		 
 		} else {

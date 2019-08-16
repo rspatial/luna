@@ -92,7 +92,7 @@ find_durls_ers <- function(scene_browse){
   #scene_url <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   
   tmp <- tempfile()
-
+  
   response <- httr::GET(scene_url, httr::progress(), httr::write_disk(tmp), handle = .ERS_HANDLE)
   
   # Get the file type, size, and name from the header
@@ -110,7 +110,7 @@ find_durls_ers <- function(scene_browse){
   return(final_path)
 }
 
-download_ers <- function(scenes){
+download_ers <- function(scenes, path, overwrite, ...){
   # Should credentials be passed in?
   cred <- getCredentials(url=.ERS_MAIN_URL)
   
@@ -120,8 +120,10 @@ download_ers <- function(scenes){
   # login an get a session
   .login_ers(user=cred$user, passw=cred$password)
   
+  # TODO: Wrap in a Try to catch errors from downloads
   outfiles <- lapply(durls, .get_files_ers)
   
+  # logout of the session
   .logout_ers()
   
   return(outfiles)
