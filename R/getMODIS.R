@@ -34,7 +34,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
-	fileurls <- simplify_urls(results, sat="MODIS")
+	fileurls <- simplify_urls(results, server="MODIS")
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {

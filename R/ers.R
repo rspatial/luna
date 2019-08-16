@@ -1,5 +1,6 @@
 # Functions for gettings data from Earth Explorer with regular login
 
+# TODO: Move these globals into a package env
 .ERS_MAIN_URL <- "https://ers.cr.usgs.gov"
 .ERS_LOGIN_URL <- file.path(.ERS_MAIN_URL, "login/")
 .ERS_LOGOUT_URL <- file.path(.ERS_MAIN_URL, "logout")
@@ -87,7 +88,7 @@ find_durls_ers <- function(scene_browse){
   }
 }
 
-.get_files_ers <- function(scene_url, ...){
+.get_files_ers <- function(scene_url, path="", ...){
   # Download a scene from Earth Explorer, must call .login_ers before using
   #scene_url <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   
@@ -102,7 +103,7 @@ find_durls_ers <- function(scene_browse){
   # TODO: check the size and content
   
   fullpath <- "/tmp" # The outpu directory, should come from user.
-  final_path <- file.path(fullpath, filename)
+  final_path <- file.path(path, filename)
   
   # Download to tmp directory, rename file to correct name upon moving to final location
   file.rename(tmp, final_path )
@@ -111,11 +112,12 @@ find_durls_ers <- function(scene_browse){
 }
 
 download_ers <- function(scenes, path, overwrite, ...){
-  # Should credentials be passed in?
-  cred <- getCredentials(url=.ERS_MAIN_URL)
+  # Downloads the files from ERS using basic account login
   
-  # find the urls without auth, based on the known scene urls
-  durls <- lapply(scenes, find_durls_ers)
+  # Make sure to get the urls with the find_durls_ers function
+  
+  # Should credentials be passed in?
+  cred <- getCredentials(url=.ERS_MAIN_URL, path)
   
   # login an get a session
   .login_ers(user=cred$user, passw=cred$password)

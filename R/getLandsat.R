@@ -40,9 +40,10 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	
 	# Select out the urls and remove duplicates
 	# TODO: Pass server through to indicate AWS, GCP or USGS - only does AWS now.
-	# TODO: For ERS results hit the find_durls_ers to get the actual file urls
-	fileurls <- simplify_urls(results, sat="L8")
+	fileurls <- simplify_urls(results, server)
 
+	# TODO: Apply filters if you only want to get certain files from the results
+	# Example: only download TOA or SR, or L1
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {
