@@ -3,8 +3,8 @@ Type: Package
 Title: Satellite Remote Sensing (Earth Observation) data analysis
 Version: 0.2-4
 Date: 2019-07-30
-Imports: terra
-Depends: httr, readr
+Depends: R (>= 3.5.0)
+Imports: terra, httr, readr, xml2, jsonlite
 SystemRequirements: C++11
 Author: Aniruddha Ghosh, Alex Mandel, Benson Kenduiywo, Robert Hijmans 
 Maintainer: <r.hijmans@gmail.com>
