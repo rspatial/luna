@@ -28,23 +28,29 @@ getModis(product, start_date, end_date, aoi, download = FALSE, path, version="00
 
 
 \value{
-character vector of file names pointing to the downloaded files (if \code{download=TRUE})
+Character vector of file names pointing to the downloaded files (if \code{download=TRUE})
 }
 
 \details{
 If no data is available between \code{start_date} and \code{end_date}, files for the closest dates are returned. 
 }
 
-\seealso{ \code{\link[luna]{getProducts}}}
+\seealso{ \code{\link[luna]{getProducts}}, \code{\link[luna]{getModisYMD}}} 
 
 \examples{  
 product <- "MOD09A1"
+# information about the product
+getProducts(product)
 sdate <- "2019-05-17" 
 edate <- "2019-05-23"
 area <- c(33, 34, -5, -4)
 dir <- tempdir()
+# list available tiles
 f <- getModis(product = product,
             start_date = sdate, end_date = edate,
             aoi = area, download = FALSE, path=dir)
+# to download the tiles, set download = TRUE
+# parse date from downloaded MODIS tiles
+getProducts(f)
 }
 
