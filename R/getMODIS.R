@@ -4,17 +4,6 @@
 # Version 0.1
 # Licence GPL v3
 
-
-getModisYMD <- function(filenames) {
-  dates <- substr(basename(filenames), 10, 16)
-  dates <- dateFromYearDoy(dates)
-  dm <- format(dates, "%m")
-  dy <- format(dates, "%Y")
-  dd <- format(dates, "%d")
-  data.frame(filename=filenames, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
-}
-
-
 getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
                      version = "006", limit = 100000, server = "LPDAAC_ECS", overwrite=FALSE, ...) {
   
@@ -66,3 +55,14 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 }
 
 
+getModisYMD <- function(filenames) {
+  ff <- basename(filenames)
+  dot <- sapply(strsplit(ff, "\\."), '[', 2)
+  dates <- gsub("[aA-zZ]", "", dot)
+  dates <- substr(basename(filenames), 10, 16)
+  dates <- dateFromYearDoy(dates)
+  dm <- format(dates, "%m")
+  dy <- format(dates, "%Y")
+  dd <- format(dates, "%d")
+  data.frame(filename=filenames, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
+}

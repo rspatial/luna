@@ -9,7 +9,7 @@
 
 
 # Fill NAs by fiting with a smoothing spline
-fillVI <- function(x) {
+fillVI <- function(x, method = "natural") {
   # To omit pixel if it has a lot of NA values
   if (length(which(is.na(x))) > length(x)*0.75) return(x)
   
@@ -19,18 +19,19 @@ fillVI <- function(x) {
   if (nz == 0 | nz == nx) {
     return(x)
   }
-  x[z] <- stats::spline(x = 1:nx, y = x, xout = z, method = "natural")$y
+  x[z] <- stats::spline(x = 1:nx, y = x, xout = z, method = method)$y
   return(x)
 }
 
 
 # Smooth of time-series data using Savitzky-Golay filter
-filterVI <- function(x){
+filterVI <- function(x, p1=4, n1=13, p2=4, n2=13){
   stopifnot(require(signal))
+  # first gapfill
   x <- fillVI(x)
   if (any(is.na(x))) return(x)
   # Smooth x
-  evisgfit <- signal::sgolayfilt(x, p = 4, n = 13, m = 0) 
+  evisgfit <- signal::sgolayfilt(x, p=p1, n=n1) 
   resu <- x - evisgfit
   dif <- abs(resu)
   mm <- max(dif)
@@ -49,7 +50,7 @@ filterVI <- function(x){
     if (length(index) > 0){
       ra4[index] <- evisgfit[index]
     } 
-    evisgfit <- signal::sgolayfilt(ra4, p = 4, n = 7, m = 0) 
+    evisgfit <- signal::sgolayfilt(ra4, p=p2, n=n2) 
     resu <- x - evisgfit
     ormax <- gdis
     gdis <- sum(abs(resu*weights))
