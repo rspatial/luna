@@ -9,7 +9,7 @@
 
 
 # Fill NAs by fiting with a smoothing spline
-fillVI <- function(x, ...) {
+fillVI <- function(x, method = "natural") {
   # To omit pixel if it has a lot of NA values
   if (length(which(is.na(x))) > length(x)*0.75) return(x)
   
@@ -19,7 +19,7 @@ fillVI <- function(x, ...) {
   if (nz == 0 | nz == nx) {
     return(x)
   }
-  x[z] <- stats::spline(x = 1:nx, y = x, xout = z, method = "natural")$y
+  x[z] <- stats::spline(x = 1:nx, y = x, xout = z, method = method)$y
   return(x)
 }
 

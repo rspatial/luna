@@ -1,7 +1,7 @@
 Package: luna
 Type: Package
 Title: Satellite Remote Sensing (Earth Observation) data analysis
-Version: 0.2-6
+Version: 0.2-7
 Date: 2019-11-18
 Depends: R (>= 3.5.0)
 Imports: terra, httr, readr, xml2, jsonlite, signal
