@@ -10,7 +10,7 @@ The function returned is list of filenames that may have been downloaded.
 }
 
 \usage{
-getModis(product, start_date, end_date, aoi, download = FALSE, path, version="006", limit=100000, server="LP DAAC", ...)
+getLandsat(product, start_date, end_date, aoi, download = FALSE, path, version="006", limit=100000, server="LP DAAC", ...)
 }
 
 \arguments{
