@@ -4,11 +4,8 @@
 # Version 0.1
 # Licence GPL v3
 
-
 split_landsat <- function(scene){
   # Split a Landsat scene ID into components
-  
-  scene <- "LC08_L1TP_167056_20190517_20190521_01_T1"
   scene_parts <- unlist(strsplit(scene, "_"))
   path <- substr(scene_parts[3],1,3)
   row <- substr(scene_parts[3],4,6)
@@ -26,8 +23,7 @@ split_landsat <- function(scene){
   
   #Stop if scene not provided
   
-  root_url <- "https://landsat-pds.s3.amazonaws.com"
-  scene = "LC08_L1TP_167056_20190517_20190521_01_T1"
+  root_url <- "http://landsat-pds.s3.amazonaws.com"
   url_parts <- split_landsat(scene)
   
   band_names <- paste0("_B", bands,".TIF")
@@ -61,7 +57,6 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	if(missing(aoi)) stop("provide an area of interest")
 	path <- .getCleanPath(path)
 	
-
 	pp <- .humanize(path=path)
 	pp <- pp[pp$short_name == product & pp$version == version, ]
   
@@ -72,7 +67,6 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 		print(pp)
 		#stop()
 	}
-	
   
   # find product, does not require credentials, returns data frame of csv
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
