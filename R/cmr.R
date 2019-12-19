@@ -81,7 +81,11 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
   # TODO check if file exists
   ofile <- paste0(path,basename(url))
   if (!file.exists(ofile) | overwrite){
-    file <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(ofile, overwrite = overwrite)) 
+    if(!is.null(USERNAME)){
+      file <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(ofile, overwrite = overwrite))
+    } else {
+      file <- download.file(url, ofile, mode = "wb") 
+    }
   }
 } 
 
