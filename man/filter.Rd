@@ -22,13 +22,15 @@
   \item{n1}{filter length for first pass (must be odd)}
   \item{p2}{filter order for inner passes}
   \item{n2}{filter length for inner passes (must be odd)}
+}  
 
 \value{
   Filtered signal of length(x)
-}
+}   
 
 \details{
 Performs smoothing of time series data using a two pass Savitzky-Golay smoothing filter. Second pass is an iterative method to minimize the difference between actual and fitted values that are significantly lower than the actual values. Missing values designated as \code{NA} are automatically interpolated with \code{\link[signal]{spline}}. For more details on the arguments see \code{\link[signal]{spline}} and \code{\link[signal]{sgolayfilt}}. 
+}
 
 \seealso{\code{\link[luna]{fillVI}}} 
 
