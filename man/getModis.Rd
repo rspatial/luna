@@ -10,7 +10,7 @@ Find and download MODIS data for a specific product, area, and time period. The 
 
 \usage{
 getModis(product, start_date, end_date, aoi, download = FALSE, path, 
-		username, password, version="006", limit=100000, ...)
+		username, password, version="006", limit=100000, overwrite = FALSE, ...)
 }
 
 \arguments{
@@ -24,8 +24,8 @@ getModis(product, start_date, end_date, aoi, download = FALSE, path,
   \item{password}{character. EOSDIS password (see Details)}
 
   \item{version}{character}
-  \item{limit}{integer > 0}
-  \item{server}{character}
+  \item{limit}{positive integer}
+  \item{overwrite}{logical}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 

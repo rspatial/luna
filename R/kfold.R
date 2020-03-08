@@ -18,7 +18,7 @@ kfold <- function(x, k=5, by=NULL) {
 				group <- c( group, rep(j, times=times[j]) )
 			}
 		
-			r <- order(runif(obs))
+			r <- order(stats::runif(obs))
 			return(group[r]) 
 		}
 	}
@@ -30,12 +30,6 @@ kfold <- function(x, k=5, by=NULL) {
 			}
 		}
 		obs <- length(x)
-	} else if (inherits(x, 'Spatial')) {
-		if (inherits(x, 'SpatialPoints')) {
-			obs <- nrow(coordinates(x))
-		} else {
-			obs <- nrow(x@data)
-		}
 	} else {
 		obs <- nrow(x)
 	}

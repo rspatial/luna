@@ -10,8 +10,8 @@ The function returned is list of filenames that may have been downloaded.
 }
 
 \usage{
-getLandsat(product, start_date, end_date, aoi, download = FALSE, path, 
-		username, password, version="006", limit=100000, server="AWS", ...)
+getLandsat(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download = FALSE, path, 
+		username, password, version="1", limit=100000, server="AWS", overwrite=FALSE, ...)
 }
 
 \arguments{
@@ -21,9 +21,12 @@ getLandsat(product, start_date, end_date, aoi, download = FALSE, path,
   \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. Or a SpatExtent or Extent object, or any object from which an Extent can be extracted (see examples)}
   \item{download}{logical. If \code{TRUE} data will be downloaded unless it is present in the download directory}
   \item{path}{character. Path name indicating where to store the data}
+  \item{username}{character. EROS user name (see Details)}
+  \item{password}{character. EROS password (see Details)}
   \item{version}{character}
   \item{limit}{integer > 0}
   \item{server}{character. Either AWS (Landsat 8 only) or ERS. See Details}
+  \item{overwrite}{logical}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 
@@ -49,16 +52,13 @@ sdate <- "2019-05-01"
 edate <- "2019-05-30"
 area <- c(33, 34, -5, -4)
 dir <- tempdir()
-f <- getLandsat(product = product,
-            start_date = sdate, end_date = edate,
-            aoi = area, download = FALSE, path=dir)
+f <- getLandsat(product, start_date=sdate, end_date=edate,
+            aoi=area, download=FALSE, path=dir)
             
 # An example of ARD Tiles from ERS server
 product <- "Landsat4-8_ARD_US_C1"
-area <- c(-122.422996520996, -121.501968383789, 38.3139801025391, 38.9253616333008)
-f1 <- getLandsat(product = product,
-            start_date = sdate, end_date = edate,
-            aoi = area, download = FALSE, path=dir, 
-            server="ERS")
+area <- c(-122.43, -121.50, 38.32, 38.91)
+f1 <- getLandsat(product, start_date=sdate, end_date=edate,
+            aoi=area, download=FALSE, path=dir, server="ERS")
 }
 

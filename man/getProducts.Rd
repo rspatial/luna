@@ -9,11 +9,12 @@ Find available product names for download. See \code{\link{getModis}} for furthe
 }
 
 \usage{
-getProducts(product)
+getProducts(product, ...)
 }
 
 \arguments{
   \item{product}{character}
+  \item{...}{additional arguments. None implemented}
 }
 
 
@@ -21,7 +22,7 @@ getProducts(product)
 character
 }
 
-\seealso{ \code{\link[luna]{getMODIS}} }
+\seealso{ \code{\link[luna]{getModis}} }
 
 
 \examples{

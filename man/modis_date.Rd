@@ -9,7 +9,7 @@ Extract the date that is encoded in a MODIS filename
 }
 
 \usage{
-getModisYMD(filename)
+modisDate(filename)
 }
 
 \arguments{

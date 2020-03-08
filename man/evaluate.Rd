@@ -34,6 +34,6 @@ conmat <- table(observed, predicted)
 conmat
 
 evaluate(conmat, "kappa")
-evaluate(conmat, "producer")
+evaluate(conmat, "class")
 }
 

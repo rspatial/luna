@@ -4,7 +4,7 @@ Title: Satellite Remote Sensing (Earth Observation) data analysis
 Version: 0.3-1
 Date: 2020-03-07
 Depends: R (>= 3.5.0)
-Imports: terra, httr, xml2, jsonlite, signal
+Imports: terra, httr, rvest, xml2, jsonlite, meteor, signal
 SystemRequirements: C++11
 Author: Aniruddha Ghosh, Alex Mandel, Benson Kenduiywo, Robert Hijmans 
 Maintainer: <r.hijmans@gmail.com>

@@ -14,7 +14,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
 
-	pp <- luna:::.humanize()
+	pp <- .humanize()
 	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
   
 	if(nrow(pp) < 1) {
@@ -32,7 +32,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 
 	if (length(urls) > 0) {
 		if (download){
-			path <- luna:::.getPath(path)
+			path <- .getPath(path)
 			if(missing(username)) stop("provide a username")
 			if(missing(password)) stop("provide a password")
 
@@ -50,15 +50,22 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 }
 
 
-modis_date <- function(filenames) {
+
+.dateFromYearDoy <- function(x) {
+	year <- as.integer(substr(x, 1, 4))
+	doy <- as.integer(substr(x, 5, 8))
+	return(as.Date(doy, origin=paste(year-1, "-12-31", sep='')))
+}
+
+
+modisDate <- function(filename) {
   ff <- basename(filenames)
   dot <- sapply(strsplit(ff, "\\."), '[', 2)
   dates <- gsub("[aA-zZ]", "", dot)
   dates <- substr(basename(filenames), 10, 16)
-  dates <- dateFromYearDoy(dates)
+  dates <- .dateFromYearDoy(dates)
   dm <- format(dates, "%m")
   dy <- format(dates, "%Y")
   dd <- format(dates, "%d")
   data.frame(filename=filenames, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
 }
-

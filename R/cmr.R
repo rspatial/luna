@@ -39,7 +39,7 @@
       
 		# Per httr docs testing for expected type and parsing manually
 		#unparsed_page = readr::read_csv(httr::content(response, as="text"))
-			p = read.csv(text=httr::content(response, as="text"), check.names=FALSE, stringsAsFactors=FALSE)
+			p <- utils::read.csv(text=httr::content(response, as="text"), check.names=FALSE, stringsAsFactors=FALSE)
     
 			#Check the URL column is not empty
 			catcher <- tryCatch(urls <- p[["Online Access URLs"]], error=function(e){e})
@@ -81,7 +81,7 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
 		if(!is.null(USERNAME)){
 			f <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
 		} else {
-			f <- download.file(url, outfile, mode = "wb") 
+			f <- utils::download.file(url, outfile, mode = "wb") 
 		}
 	}
 	f
@@ -94,7 +94,7 @@ cmr_download <- function(urls, path, username, password, overwrite, ...){
 	files <- rep("", length(urls))
 	for (i in 1:length(urls)) {
 		f <- tryCatch(
-				luna:::.cmr_download_one(urls[i], path, username, password, overwrite), 
+				.cmr_download_one(urls[i], path, username, password, overwrite), 
 				error = function(e){e}
 			)
 		if (inherits(f, "error")) {
@@ -115,7 +115,7 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   #:param kwargs: search parameters
   #:return: dataframe of results
   
-	e <- luna:::.getExtent(extent)
+	e <- .getExtent(extent)
 	  
 	  # for testing validity
 	start_date <- as.Date(start_date)
