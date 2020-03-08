@@ -10,7 +10,8 @@ The function returned is list of filenames that may have been downloaded.
 }
 
 \usage{
-getLandsat(product, start_date, end_date, aoi, download = FALSE, path, version="006", limit=100000, server="LP DAAC", ...)
+getLandsat(product, start_date, end_date, aoi, download = FALSE, path, 
+		username, password, version="006", limit=100000, server="AWS", ...)
 }
 
 \arguments{
@@ -22,7 +23,7 @@ getLandsat(product, start_date, end_date, aoi, download = FALSE, path, version="
   \item{path}{character. Path name indicating where to store the data}
   \item{version}{character}
   \item{limit}{integer > 0}
-  \item{server}{character. Defaults to AWS (Landsat 8 only). See Details}
+  \item{server}{character. Either AWS (Landsat 8 only) or ERS. See Details}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 
@@ -32,13 +33,15 @@ character vector of file names pointing to the downloaded files (if \code{downlo
 }
 
 \details{
+The AWS (Amazon Web Services) server provides Landsat 8 data only. It does not require credentials (username and password). 
+
+The EROS service from the USGS also provides other Landsat products. To use for downloading data, you need to provide "ERS" credentials. If you do not have these, you can sign up for a free account here: \url{https://ers.cr.usgs.gov/register}
+
+
 If no data is available between \code{start_date} and \code{end_date}, files for the closest dates are returned. 
-
-Server: AWS, ERS
-
 }
 
-\seealso{ \code{\link[luna]{getProducts}}}
+\seealso{ \code{\link{getProducts}}, \code{\link{getModis}}}
 
 \examples{  
 product <- "Landsat_8_OLI_TIRS_C1"

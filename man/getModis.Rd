@@ -5,12 +5,12 @@
 \title{Find and download MODIS products}
 
 \description{
-Find and download MODIS data for a specific product, area, and time period. 
-The function returned is list of filenames that may have been downloaded.
+Find and download MODIS data for a specific product, area, and time period. The function returned is list of filenames that may have been downloaded.
 }
 
 \usage{
-getModis(product, start_date, end_date, aoi, download = FALSE, path, version="006", limit=100000, server="LP DAAC", ...)
+getModis(product, start_date, end_date, aoi, download = FALSE, path, 
+		username, password, version="006", limit=100000, ...)
 }
 
 \arguments{
@@ -20,6 +20,9 @@ getModis(product, start_date, end_date, aoi, download = FALSE, path, version="00
   \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. Or a SpatExtent or Extent object, or any object from which an Extent can be extracted (see examples)}
   \item{download}{logical. If \code{TRUE} data will be downloaded unless it is present in the download directory}
   \item{path}{character. Path name indicating where to store the data}
+  \item{username}{character. EOSDIS user name (see Details)}
+  \item{password}{character. EOSDIS password (see Details)}
+
   \item{version}{character}
   \item{limit}{integer > 0}
   \item{server}{character}
@@ -32,10 +35,12 @@ Character vector of file names pointing to the downloaded files (if \code{downlo
 }
 
 \details{
+This function is an R interface to the EOSDIS system. Access is free, but it requires a "Earthdata" account. If you do not have an account, you can sign up here: \url{https://urs.earthdata.nasa.gov/users/new}
+
 If no data is available between \code{start_date} and \code{end_date}, files for the closest dates are returned. 
 }
 
-\seealso{ \code{\link[luna]{getProducts}}, \code{\link[luna]{getModisYMD}}} 
+\seealso{ \code{\link{getProducts}}, \code{\link{getLandsat}}} 
 
 \examples{  
 product <- "MOD09A1"
@@ -44,13 +49,24 @@ getProducts(product)
 sdate <- "2019-05-17" 
 edate <- "2019-05-23"
 area <- c(33, 34, -5, -4)
-dir <- tempdir()
+path <- tempdir()
 # list available tiles
 f <- getModis(product = product,
             start_date = sdate, end_date = edate,
-            aoi = area, download = FALSE, path=dir)
+            aoi = area, download = FALSE, path=path)
+f
+
+# get the date from the filenames
+modis_date(f)
+
 # to download the tiles, set download = TRUE
-# parse date from downloaded MODIS tiles
-getProducts(f)
+# and provide your credentials 
+
+usr <- "your user name"
+pwd <- "your password"
+#f <- getModis(product = product, username=urs, password=pwd,
+#            start_date = sdate, end_date = edate,
+#            aoi = area, download = TRUE, path=path)
+
 }
 

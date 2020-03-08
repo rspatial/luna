@@ -4,49 +4,44 @@
 # Version 0.1
 # Licence GPL v3
 
-getModis <- function(product, start_date, end_date, aoi, download=FALSE, path="",
-                     version = "006", limit = 100000, server = "LPDAAC_ECS", overwrite=FALSE, ...) {
+getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, username, password,
+                     version = "006", limit = 100000, overwrite=FALSE, ...) {
   
-	#stopifnot(require(readr))
-	#stopifnot(require(httr))
+    server = "LPDAAC_ECS"
 	
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
-	path <- .getCleanPath(path)
-	
 
-	pp <- .humanize(path=path)
+	pp <- luna:::.humanize()
 	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
   
 	if(nrow(pp) < 1) {
 		stop("The requested product is not available through this function")
 	} else if (nrow(pp) > 1) {
-		warning("Multiple sources available")
+		warning("Multiple sources available, using first one")
 		print(pp)
-		#stop()
+		pp <- pp[1, ]
 	}
 	
   
   # find product urls, does not require credentials
 	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
-	
-	# Select out the urls and remove duplicates
-	fileurls <- simplify_urls(results, server="MODIS")
-	
-  # TODO: need a better try-error message for the function
-	if (length(fileurls) > 0) {
+	urls <- unique(results[, "Online Access URLs"])
+
+	if (length(urls) > 0) {
 		if (download){
-			cred <- getCredentials(url="https://urs.earthdata.nasa.gov/users/new", ...)
-			files <- cmr_download(urls = fileurls, path = path, 
-					 username = cred$user, password = cred$password,
-					 overwrite = overwrite)			
-			# rh: is there a better way? 
-			ff <- file.path(path, basename(fileurls))	
+			path <- luna:::.getPath(path)
+			if(missing(username)) stop("provide a username")
+			if(missing(password)) stop("provide a password")
+
+			ff <- cmr_download(urls, path, username, password, overwrite)			
+
+			ff <- file.path(path, basename(urls))	
 			return(ff)		 
 		} else {
-			return(basename(fileurls))
+			return(basename(urls))
 		}
 	} else {
 		print("No results found")
@@ -55,7 +50,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path=""
 }
 
 
-getModisYMD <- function(filenames) {
+modis_date <- function(filenames) {
   ff <- basename(filenames)
   dot <- sapply(strsplit(ff, "\\."), '[', 2)
   dates <- gsub("[aA-zZ]", "", dot)
@@ -66,3 +61,4 @@ getModisYMD <- function(filenames) {
   dd <- format(dates, "%d")
   data.frame(filename=filenames, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
 }
+

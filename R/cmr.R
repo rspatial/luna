@@ -8,60 +8,58 @@
 
 #AUTH_HOST = 'urs.earthdata.nasa.gov'
 
+
 .get_search_results <- function(url, limit, kwargs){
   #  Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
   #:return: list of results (<Instance of Result>)
   
-  #logging.info("======== Waiting for response ========")
-  
-  page_num <- 1
-  results <- vector('character')  #is this needed?
-  while (length(results) < limit){
+	page_num <- 1
+	results <- NULL
+
+	while (length(results) < limit){
     #print(page_num)
-    response <- httr::GET(
-		url=url,
-      # TODO: fix next line to take all possible args passed via ...
-		httr::add_headers(Accept="text/csv"),
-		query=c(kwargs, page_num=page_num) 
-	  #, page_size=self._PAGE_SIZE),
-      # headers=self._SEARCH_HEADER # what is the header passed from parent function?
-    )
+		response <- httr::GET(
+			url=url,
+		# TODO: fix next line to take all possible args passed via ...
+			httr::add_headers(Accept="text/csv"),
+			query=c(kwargs, page_num=page_num) 
+		#, page_size=self._PAGE_SIZE),
+		# headers=self._SEARCH_HEADER # what is the header passed from parent function?
+		)
     
-    # Check for a valid response
-    httr::stop_for_status(response)
+		# Check for a valid response
+		httr::stop_for_status(response)
     
-    #unparsed_page = content(response,parsed="application/json")
-    # parsing without messages
-    # http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
-    if (httr::http_type(response) == "text/csv"){
+		#unparsed_page = content(response,parsed="application/json")
+		# parsing without messages
+		# http://r.789695.n4.nabble.com/httr-content-without-message-td4747453.html
+		if (httr::http_type(response) == "text/csv"){
       
-      # Per httr docs testing for expected type and parsing manually
-      unparsed_page = readr::read_csv(httr::content(response, as="text"))
+		# Per httr docs testing for expected type and parsing manually
+		#unparsed_page = readr::read_csv(httr::content(response, as="text"))
+			p = read.csv(text=httr::content(response, as="text"), check.names=FALSE, stringsAsFactors=FALSE)
     
-      #Check the URL column is not empty
-      catcher <- tryCatch(urls <- unparsed_page$`Online Access URLs`,error=function(e){e})
+			#Check the URL column is not empty
+			catcher <- tryCatch(urls <- p[["Online Access URLs"]], error=function(e){e})
   
-      if(!inherits(catcher, "error")){
-        if(length(urls)==0){
-          break
-        }
-        # Append the full table of results
-        results <- rbind(results, unparsed_page)
-        page_num <- page_num+1
-      } else { 
-        break
-      }
-    
-    } else {
-    
-      #The response was not a csv, we should throw and error?
-      break
-    }
-  }
-  
-  return(results)
+			if(!inherits(catcher, "error")){
+				if(length(urls)==0){
+					break
+				}
+				# Append the full table of results
+				results <- rbind(results, p)
+				page_num <- page_num + 1
+			} else { 
+				break
+			}  
+		} else {
+		#The response was not a csv, we should throw and error?
+			break
+		}
+	}
+    return(results)
 }
 
 
@@ -77,36 +75,37 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
 
 .cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, ...){
   # Download a single result
-  # TODO verify outdir exists if not make folder
   # TODO check if file exists
-  ofile <- paste0(path,basename(url))
-  if (!file.exists(ofile) | overwrite){
-    if(!is.null(USERNAME)){
-      file <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(ofile, overwrite = overwrite))
-    } else {
-      file <- download.file(url, ofile, mode = "wb") 
-    }
-  }
+	outfile <- file.path(path, basename(url))
+	if (!file.exists(outfile) | overwrite){
+		if(!is.null(USERNAME)){
+			f <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
+		} else {
+			f <- download.file(url, outfile, mode = "wb") 
+		}
+	}
+	f
 } 
 
 
-cmr_download <- function(urls, path, username=NULL, password=NULL, overwrite, ...){
+cmr_download <- function(urls, path, username, password, overwrite, ...){
   # Given a list of results, download all of them
-  # TODO allow in parallel
-  # TODO re-use a session
   
 	files <- rep("", length(urls))
 	for (i in 1:length(urls)) {
-		files <- tryCatch(.cmr_download_one(urls[i], path, 
-                                        USERNAME = username, PASSWORD = password,
-                                        overwrite = overwrite), 
-                      error = function(e){e})
-		if (inherits(files, "error")) {
-			warning("failure:", urls[i])
+		f <- tryCatch(
+				luna:::.cmr_download_one(urls[i], path, username, password, overwrite), 
+				error = function(e){e}
+			)
+		if (inherits(f, "error")) {
+			warning("failure: ", urls[i])
+			f <- file.path(path, urls[i])
+			if ( isTRUE(file.info(f)$size < 1) ) file.remove(f)
 		} else {
 			files[i] = urls[i]
 		}
 	}
+	cat("\n")
 	return(files)
 }
 
@@ -116,7 +115,7 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
   #:param kwargs: search parameters
   #:return: dataframe of results
   
-	e <- .getExtent(extent)
+	e <- luna:::.getExtent(extent)
 	  
 	  # for testing validity
 	start_date <- as.Date(start_date)
@@ -134,7 +133,7 @@ searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limi
 	}
 	  
 	cmr_host="https://cmr.earthdata.nasa.gov"
-	url <- paste0(cmr_host,"/search/granules")
+	url <- file.path(cmr_host, "search/granules")
 	results <- .get_search_results(url=url, limit=limit, kwargs=params)
 	return(results) 
 }

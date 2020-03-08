@@ -39,7 +39,7 @@ getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update 
   baseurl <- "https://www.ncei.noaa.gov/data/avhrr-land-normalized-difference-vegetation-index/access"
   # url to access 8 different ways of downloading the data
   # baseurl <- "https://www.ncei.noaa.gov/thredds/catalog/cdr/ndvi/files"
-  path <- .getCleanPath(path)
+  path <- .getPath(path)
   
   # list of AVHRR files
   pp <- .listAVHRR(path = path, baseurl = baseurl, update = FALSE)

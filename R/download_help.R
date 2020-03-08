@@ -22,31 +22,9 @@
 }
 
 
-.getCleanPath <- function(path) {
-	
-	if (missing(path)) {
-		path <- tempdir()
-	} 
-  
-	if (path == "") {
-		path <- tempdir()
-	} 
-  
+.getPath <- function(path) {
 	path <- trimws(path)
-  
-	if (substr(path, nchar(path)-1, nchar(path)) == '//' ) {
-		p <- substr(path, 1, nchar(path)-2)		
-	} else if (substr(path, nchar(path), nchar(path)) == '/'  | substr(path, nchar(path), nchar(path)) == '\\') {
-		p <- substr(path, 1, nchar(path)-1)
-	} else {
-		p <- path
-	}
-	if (!file.exists(p) & !file.exists(path)) {
-		stop('path does not exist: ', path)
-	}
-	if (substr(path, nchar(path), nchar(path)) != '/' & substr(path, nchar(path), nchar(path)) != '\\') {
-		path <- paste(path, "/", sep="")
-	}
+	stopifnot(dir.exists(path))
 	return(path)
 }
 

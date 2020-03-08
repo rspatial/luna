@@ -111,16 +111,13 @@ find_durls_ers <- function(scene_browse){
   return(final_path)
 }
 
-download_ers <- function(scenes, path, overwrite, ...){
+download_ers <- function(scenes, path, username, password, overwrite, ...){
   # Downloads the files from ERS using basic account login
   
   # Make sure to get the urls with the find_durls_ers function
   
-  # Should credentials be passed in?
-  cred <- getCredentials(url=.ERS_MAIN_URL, path)
-  
   # login an get a session
-  .login_ers(user=cred$user, passw=cred$password)
+  .login_ers(user=username, passw=password)
   
   # TODO: Wrap in a Try to catch errors from downloads
   outfiles <- lapply(durls, .get_files_ers)

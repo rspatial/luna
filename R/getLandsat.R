@@ -40,22 +40,19 @@ split_landsat <- function(scene){
   return(final_urls)
 }
 
-getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download=FALSE, path="",
-                     version = "1", limit = 100000, server = "AWS", overwrite=FALSE, ...) {
+getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download=FALSE, path, username, password, version = "1", limit = 100000, server = "AWS", overwrite=FALSE, ...) {
   
-  # Search the CMR for Landsat scenes
-  # Currently only supports the download of Landsat 8 from AWS
-  # TODO: Implement alternate download from Google or EROS USGS for 4,5,7
-  # Takes argument about which bands to download, will vary by Landsat version.
+	# Search the CMR for Landsat scenes
+	# Currently only supports the download of Landsat 8 from AWS
+	# TODO: Implement alternate download from Google or EROS USGS for 4,5,7
+	# Takes argument about which bands to download, will vary by Landsat version.
   
-	#stopifnot(require(readr))
-	#stopifnot(require(httr))
-	
-	if(missing(product)) stop("provide a product name")
-	if(missing(start_date)) stop("provide a start_date")
-	if(missing(end_date)) stop("provide an end_date")
-	if(missing(aoi)) stop("provide an area of interest")
-	path <- .getCleanPath(path)
+	stopifnot(server %in% c("AWS", "EROS"))
+	if (missing(product)) stop("provide a product name")
+	if (missing(start_date)) stop("provide a start_date")
+	if (missing(end_date)) stop("provide an end_date")
+	if (missing(aoi)) stop("provide an area of interest")
+	path <- .getPath(path)
 	
 	pp <- .humanize(path=path)
 	pp <- pp[pp$short_name == product & pp$version == version, ]
@@ -80,16 +77,11 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	
   # TODO: need a better try-error message for the function
 	if (length(fileurls) > 0) {
-		if (download){
-		  # rh: is there a better way? 
-		  if(server=="AWS"){
-		    files <- cmr_download(urls = fileurls, path = path,
-		                          overwrite = overwrite
-		                          )			
-		  } else if (server=="ERS"){
-		    files <- download_ers(scenes = fileurls, path = path, 
-		                          overwrite = overwrite
-		                          )
+		if (download) {
+			if (server=="AWS") {
+				files <- cmr_download(urls = fileurls, path = path, username=username, password=password, overwrite = overwrite)			
+			} else if (server=="EROS") {
+				files <- download_ers(scenes = fileurls, path = path, username=username, password=password, overwrite = overwrite)
 			}
 			
 		  # TODO: This is going to return junk names for things from ERS 

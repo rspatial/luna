@@ -24,7 +24,6 @@ getProducts <- function(product = NULL, ...){
 # humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
 # use this file to get an updated list of dataset that can searched (not always downloadable) via cmr
 
-
 .humanize <- function(...) {
 	f <- system.file("cmr/cmr_sources.rds", package="luna")
 	d <- readRDS(f)
@@ -34,11 +33,8 @@ getProducts <- function(product = NULL, ...){
 
 .oldhumanize <- function(download=TRUE, path="", ...) {
   
-  #do not add dependencies on raster; less so to functions that are not exported
-  # copy the function if we must
-	path <- .getCleanPath(path)
-  
-	filename <- file.path(path,"nasa_earthdata_products.csv")
+	path <- .getPath(path)
+	filename <- file.path(path, "nasa_earthdata_products.csv")
   
   # could also check the time stamp of the file, download again if too  old
 	if (!file.exists(filename)) {
@@ -61,61 +57,63 @@ getProducts <- function(product = NULL, ...){
 
 # setup credentials for different services
 # ag: this function should be exposed with a help file
-getCredentials <- function(url=NULL, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, removecred=FALSE, ...) {
+# getCredentials <- function(url, username = NULL, password = NULL, credfile = NULL, savecred=TRUE, removecred=FALSE, ...) {
 
-	defcredfile <- path.expand("~/luna_cred.rds")
+	# if (missing(url)) stop("you must provide a url")
+	
+	# defcredfile <- path.expand("~/luna_cred.rds")
 
-	if (removecred) {
-		if (is.null(credfile)) {
-			credfile <- defcredfile
-		}
-		if (file.exists(credfile)) {
-			file.remove(credfile)
-		} 
-		return()
-	}
+	# if (removecred) {
+		# if (is.null(credfile)) {
+			# credfile <- defcredfile
+		# }
+		# if (file.exists(credfile)) {
+			# file.remove(credfile)
+		# } 
+		# return()
+	# }
 
-	saveCrd <- function(credInfo, crdfile) {
-		if (file.exists(crdfile)) {
-			d <- readRDS(crdfile)
-			i <- which(url == d$url) 
-			credInfo <- rbind(credInfo, d)
-			if (length(i) > 0) {
-				credInfo <- credInfo[-i, ]
-			}
-		}
-		credInfo <- unique(credInfo)
-		saveRDS(credInfo, crdfile)
-	}
+	# saveCrd <- function(credInfo, crdfile) {
+		# if (file.exists(crdfile)) {
+			# d <- readRDS(crdfile)
+			# i <- which(url == d$url) 
+			# credInfo <- rbind(credInfo, d)
+			# if (length(i) > 0) {
+				# credInfo <- credInfo[-i, ]
+			# }
+		# }
+		# credInfo <- unique(credInfo)
+		# saveRDS(credInfo, crdfile)
+	# }
   
-	if (!is.null(credfile)) { # it is useful to be able to point to a file
-		credInfo <- readRDS(credfile)
-		credInfo <- credInfo[credInfo$url == url, , drop=FALSE]
-		if (nrow(credInfo) == 0) {
-			stop("no record for url in supplied credfile")
-		}
-	} else if ((!is.null(username)) && (!is.null(password))) {
-		credInfo <- data.frame(url = url, user = username, password = password, stringsAsFactors = FALSE)
-		if (savecred) saveCrd(credInfo, defcredfile)
-	} else {
-		ok <- FALSE
-		if (file.exists(defcredfile)) {
-			credInfo <- readRDS(defcredfile)
-			credInfo <- credInfo[credInfo$url == url, ]
-			if (nrow(credInfo) > 0) {
-				ok <- TRUE
-			}
-		}
-		if (!ok) {
-			paste("Credentials for: ", url)
-			usr <- readline(paste("username: \n"))
-			pswd <- readline(paste("password: \n"))
-			credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
-			if (savecred) saveCrd(credInfo, defcredfile)
-		}
-	}
-	return(credInfo)
-}
+	# if (!is.null(credfile)) { # it is useful to be able to point to a file
+		# credInfo <- readRDS(credfile)
+		# credInfo <- credInfo[credInfo$url == url, , drop=FALSE]
+		# if (nrow(credInfo) == 0) {
+			# stop("no record for url in supplied credfile")
+		# }
+	# } else if ((!is.null(username)) && (!is.null(password))) {
+		# credInfo <- data.frame(url = url, user = username, password = password, stringsAsFactors = FALSE)
+		# if (savecred) saveCrd(credInfo, defcredfile)
+	# } else {
+		# ok <- FALSE
+		# if (file.exists(defcredfile)) {
+			# credInfo <- readRDS(defcredfile)
+			# credInfo <- credInfo[credInfo$url == url, ]
+			# if (nrow(credInfo) > 0) {
+				# ok <- TRUE
+			# }
+		# }
+		# if (!ok) {
+			# paste("Credentials for: ", url)
+			# usr <- readline(paste("username: \n"))
+			# pswd <- readline(paste("password: \n"))
+			# credInfo <- data.frame(url = url, user = usr, password = pswd, stringsAsFactors = FALSE)
+			# if (savecred) saveCrd(credInfo, defcredfile)
+		# }
+	# }
+	# return(credInfo)
+# }
 
 
 # Open the product information in a browser

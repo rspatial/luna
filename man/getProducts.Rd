@@ -21,7 +21,8 @@ getProducts(product)
 character
 }
 
-\seealso{ \code{\link[luna]{getProducts}}}
+\seealso{ \code{\link[luna]{getMODIS}} }
+
 
 \examples{
 # list of all available MODIS products
