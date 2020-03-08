@@ -4,7 +4,7 @@
 # Version 0.1
 # Licence GPL v3
 
-split_landsat <- function(scene){
+.split_landsat <- function(scene){
   # Split a Landsat scene ID into components
   scene_parts <- unlist(strsplit(scene, "_"))
   path <- substr(scene_parts[3],1,3)
@@ -24,7 +24,7 @@ split_landsat <- function(scene){
   #Stop if scene not provided
   
   root_url <- "http://landsat-pds.s3.amazonaws.com"
-  url_parts <- split_landsat(scene)
+  url_parts <- .split_landsat(scene)
   
   band_names <- paste0("_B", bands,".TIF")
   
@@ -66,11 +66,11 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	}
   
   # find product, does not require credentials, returns data frame of csv
-	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	results <- .searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	
 	# Select out the urls and remove duplicates
 	# TODO: Pass server through to indicate AWS, GCP or USGS - only does AWS now.
-	fileurls <- simplify_urls(results, server)
+	fileurls <- .simplify_urls(results, server)
 
 	# TODO: Apply filters if you only want to get certain files from the results
 	# Example: only download TOA or SR, or L1
@@ -79,7 +79,7 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 	if (length(fileurls) > 0) {
 		if (download) {
 			if (server=="AWS") {
-				files <- cmr_download(urls = fileurls, path = path, username=username, password=password, overwrite = overwrite)			
+				files <- .cmr_download(urls = fileurls, path = path, username=username, password=password, overwrite = overwrite)			
 			} else if (server=="EROS") {
 				files <- download_ers(scenes = fileurls, path = path, username=username, password=password, overwrite = overwrite)
 			}

@@ -27,7 +27,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 	
   
   # find product urls, does not require credentials
-	results <- searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	results <- .searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	urls <- unique(results[, "Online Access URLs"])
 
 	if (length(urls) > 0) {
@@ -36,7 +36,7 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 			if(missing(username)) stop("provide a username")
 			if(missing(password)) stop("provide a password")
 
-			ff <- cmr_download(urls, path, username, password, overwrite)			
+			ff <- .cmr_download(urls, path, username, password, overwrite)			
 
 			ff <- file.path(path, basename(urls))	
 			return(ff)		 

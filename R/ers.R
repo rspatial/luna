@@ -72,7 +72,7 @@
   return(response)
 }
 
-find_durls_ers <- function(scene_browse) {
+.find_durls_ers <- function(scene_browse) {
   # Scrape the Download URL for the actual urls to files
   # TODO: How do we want to take in the items that need to found, results of CMR or EE search 
   #list_url <- "https://earthexplorer.usgs.gov/download/external/options/LANDSAT_8_C1/LC81710582019149LGN00/INVSVC/"
@@ -115,6 +115,9 @@ download_ers <- function(scenes, path, username, password, overwrite, ...){
   # Downloads the files from ERS using basic account login
   
   # Make sure to get the urls with the find_durls_ers function
+  
+  # RH like this? 
+  durls <- .find_durls_ers (scenes)
   
   # login an get a session
   .login_ers(user=username, passw=password)

@@ -150,7 +150,7 @@ productInfo <- function(product, ...){
 #   invisible(readline(prompt="Press [enter] to open the webpage of the next product or "))
 # }
 
-simplify_urls <- function(response_table, server, ...){
+.simplify_urls <- function(response_table, server, ...){
   # Depending on the type of data requested the url formatting will vary
   # MODIS the download url is the `Online Access URLs`
   # Landsat the `Online Access URLs` is a webpage listing options
@@ -170,7 +170,7 @@ simplify_urls <- function(response_table, server, ...){
     urls <- unlist(lapply(sceneID, .find_aws))
   } else if (server == "ERS"){
     sceneID <- tryCatch(urls <- response_table$`Online Access URLs`,error=function(e){e})
-    urls <- unlist(lapply(sceneID, find_durls_ers))
+    urls <- unlist(lapply(sceneID, .find_durls_ers))
   } 
   else {
     # TODO: What to do if no urls are found?

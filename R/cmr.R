@@ -63,7 +63,7 @@
 }
 
 
-searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=100, ...){
+.searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=100, ...){
   # Search the CMR collections
   # :param limit: limit of the number of results
   # :param kwargs ...: search parameters
@@ -88,7 +88,7 @@ searchCollection <- function(cmr_host="https://cmr.earthdata.nasa.gov", limit=10
 } 
 
 
-cmr_download <- function(urls, path, username, password, overwrite, ...){
+.cmr_download <- function(urls, path, username, password, overwrite, ...){
   # Given a list of results, download all of them
   
 	files <- rep("", length(urls))
@@ -109,7 +109,7 @@ cmr_download <- function(urls, path, username, password, overwrite, ...){
 	return(files)
 }
 
-searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
+.searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
   #Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
