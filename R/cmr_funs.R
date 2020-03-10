@@ -7,17 +7,16 @@
 
 # List all unique products available through CMR
 getProducts <- function(product, ...){
-   d <- .humanize()
+	d <- .humanize()
    
-   if (length(product) > 1){
-     paste0(product, collapse = "|")
-   }
+	if (!missing(product)) {
+		if (length(product) > 1){
+			paste0(product, collapse = "|")
+		}   
+		d <- d[grep(product,d$short_name), ]
+	}
    
-   if (!is.null(product)){
-     d <- d[grep(product,d$short_name), ]
-   }
-   
-   return(d)
+	return(d)
 }
 
 

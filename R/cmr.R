@@ -77,14 +77,15 @@
   # Download a single result
   # TODO check if file exists
 	outfile <- file.path(path, basename(url))
-	if (!file.exists(outfile) | overwrite){
+	if ((!file.exists(outfile)) | overwrite){
 		if(!is.null(USERNAME)){
 			f <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
 		} else {
 			f <- utils::download.file(url, outfile, mode = "wb") 
+			return(f)
 		}
 	}
-	f
+	return(outfile)
 } 
 
 
