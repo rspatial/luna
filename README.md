@@ -2,6 +2,8 @@
 
 luna is a R package with satellite remote sensing functions.
 
-To install:
+You can install it with the `remotes` package. 
 
+```
 remotes::install_github("rspatial/luna")
+```
