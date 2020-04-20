@@ -11,7 +11,7 @@
 }
 
 \usage{
-  filterVI(x, method, p1, n1, p2, n2)
+  filterVI(x, ...)
 
   fillVI(x, method = "natural")
 
@@ -19,11 +19,14 @@
 
 \arguments{
   \item{x}{numeric or SpatRaster representing time series signal to be filtered}
-  \item{method}{type of spline to be used. Possible values are "fmm", "natural", "periodic", "monoH.FC" and "hyman".}
-  \item{p1}{filter order for first pass}
-  \item{n1}{filter length for first pass (must be odd)}
-  \item{p2}{filter order for inner passes}
-  \item{n2}{filter length for inner passes (must be odd)}
+  \item{method}{type of spline to be used. Possible values are "fmm", "natural", "periodic", "monoH.FC" and "hyman"}
+  \item{...}{additional arguments:
+  \code{method}: as above
+  \code{p1}: filter order for first pass
+  \code{n1}: filter length for first pass (must be odd)
+  \code{p2}: filter order for inner passes
+  \code{n2}: filter length for inner passes (must be odd)
+  }
 }  
 
 \value{
@@ -37,8 +40,9 @@ Performs smoothing of time series data using a two pass Savitzky-Golay smoothing
 
 \examples{  
 # apply on single pixel
-s <- filterVI(vi)
+#vi <- ....
+#s <- filterVI(vi)
 
 # for time series raster 
-fevi <- app(evi, filterVI)
+#fevi <- app(evi, filterVI)
 }

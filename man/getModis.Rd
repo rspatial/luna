@@ -57,7 +57,7 @@ f <- getModis(product = product,
 f
 
 # get the date from the filenames
-modis_date(f)
+modisDate(f)
 
 # to download the tiles, set download = TRUE
 # and provide your credentials 

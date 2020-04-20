@@ -71,7 +71,7 @@
 }
 
 
-.download_ee <- function(fileurl, entityId, token, size){
+.download_ee <- function(fileurl, entityId, token, size, path){
   # Try downloading a file given the downloadOptions$url from get_ee_downurl
   
   params <- list(
@@ -81,7 +81,7 @@
   #fileurl <- "https://earthexplorer.usgs.gov/download/14320/LC08_CU_002008_20190503_C01_V01/BT/EE"
   #check <- httr::POST(fileurl, body=json_params, content_type("application/x-www-form-urlencoded"), httr::progress())
   # TODO: Set the file name based on the scene name, and the content type in the headers
-  name_file <- file.path("/tmp", entityId) # TODO, how to know the extension
+  name_file <- file.path(path, entityId) # TODO, how to know the extension
   check <- httr::GET(fileurl, 
                      #verbose(info=TRUE),
                      query=.make_params(params), 
@@ -153,15 +153,15 @@
   return(dfitems)
 }
 
-download_ee <- function(product, entityIds_all, user, passw){
+download_ee <- function(product, ids, path, username, password, ...){
   # Given the Scenes are identified via CMR, lookup the url and download
 
   # TODO: Make sure you have a valid session token
   # They are good for about an hour without usage, otherwise they time out
-  token <- .login_ee(USERNAME=user, PASSWORD=passw)
+  token <- .login_ee(USERNAME=username, PASSWORD=password)
   
   # Then query the downloadOptions
-  all_urls <- lapply(entityIds_all, .get_ee_downurl, datasetName = product, token = token)
+  all_urls <- lapply(ids, .get_ee_downurl, datasetName = product, token = token)
   
   for (each in all_urls){
     .download_ee(fileurl = each$url, token = token, size = each$filesize)  

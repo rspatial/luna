@@ -14,8 +14,7 @@ modis_mask(x, bits, qmat, ...)
   \item{x}{SpatRaster}
   \item{bits}{single integer value: 16 or 32}
   \item{qmat}{three-column matrix of data.frame. The first and second columns are positive integers (or character representation thereof) indicating the start and end bits (starting counting at one, not at zero!). The third column has the patterns to be rejected, stored as comma-separated characters. See example}
-  \item{\dots}{additional arguments, none implemented}\
-  \item{val}{integer}  
+  \item{\dots}{additional arguments, none implemented}
 }
 
 \value{

@@ -59,6 +59,6 @@ f <- getLandsat(product, start_date=sdate, end_date=edate,
 product <- "Landsat4-8_ARD_US_C1"
 area <- c(-122.43, -121.50, 38.32, 38.91)
 f1 <- getLandsat(product, start_date=sdate, end_date=edate,
-            aoi=area, download=FALSE, path=dir, server="ERS")
+            aoi=area, download=FALSE, path=dir, server="EROS")
 }
 

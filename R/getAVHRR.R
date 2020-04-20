@@ -74,7 +74,7 @@ getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update 
     
     if (!ok){
 		cat("Downloading AVHRR tile for", as.character(ff$date), "\n")
-		ff <- try(.downloadFile(furl, filename, mode = "wb", overwrite, quiet = TRUE)) 
+		ff <- try(utils::download.file(furl, filename, mode = "wb", overwrite, quiet = TRUE)) 
     } 
     
     if (inherits(ff, "try-error")) next

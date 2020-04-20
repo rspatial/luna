@@ -28,13 +28,13 @@
 }
 
 \details{
-  Downloads compressed global layers within the dates specified. For further processing, uncompressed ".nc4" files can be opened with \code{raster} package.   
+  Downloads compressed global layers within the dates specified. For further processing, uncompressed ".nc4" files can be opened with the \code{terra} package.   
 }
 
 \examples{  
-  sdate <- "2019-05-17" 
-  edate <- "2019-05-23"
-  dir <- tempdir()
-  ff <- getAVHRR(start_date, end_date, dir)
+  start <- "2019-05-17" 
+  end <- "2019-05-23"
+  path <- tempdir()
+  ff <- getAVHRR(start, end, path)
 }
 

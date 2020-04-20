@@ -59,13 +59,13 @@ getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, u
 
 
 modisDate <- function(filename) {
-  ff <- basename(filenames)
+  ff <- basename(filename)
   dot <- sapply(strsplit(ff, "\\."), '[', 2)
   dates <- gsub("[aA-zZ]", "", dot)
-  dates <- substr(basename(filenames), 10, 16)
+  dates <- substr(basename(filename), 10, 16)
   dates <- .dateFromYearDoy(dates)
   dm <- format(dates, "%m")
   dy <- format(dates, "%Y")
   dd <- format(dates, "%d")
-  data.frame(filename=filenames, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
+  data.frame(filename=filename, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
 }
