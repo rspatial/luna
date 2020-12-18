@@ -33,11 +33,17 @@
 
 .getExtent <- function(aoi) {
   # Return the extent of an Area Of Interest in a character format for Web API requests
-	if (!is.vector(aoi)) {
-		b <- as.vector(bbox(aoi))
+	if (inherits(aoi, "SpatExtent") || inherits(aoi, "Extent")) {
+		aoi <- as.vector(aoi)
+	} else if (inherits(aoi, "SpatVector") || inherits(aoi, "SpatRaster") || inherits(aoi, "SpatRaster")) {
+		aoi <- as.vector(ext(aoi))
 	} else {
-		b <- as.vector(t(matrix(aoi, ncol=2)))
+		if (!is.vector(aoi) && (lenth(aoi) == 4)) {
+			stop("not a valid aoi")
+		}
 	}
+	# xmin, ymin, xmax, ymax
+	b <- as.vector(t(matrix(aoi, ncol=2)))
 	paste(b, collapse=",")
 }
 
