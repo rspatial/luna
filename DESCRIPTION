@@ -6,8 +6,8 @@ Date: 2020-04-19
 Depends: R (>= 3.5.0)
 Imports: terra, httr, rvest, xml2, jsonlite, meteor, signal
 SystemRequirements: C++11
-Author: Aniruddha Ghosh, Alex Mandel, Benson Kenduiywo, Robert Hijmans 
-Maintainer: <r.hijmans@gmail.com>
+Author: Aniruddha Ghosh [cre, aut], Alex Mandel [ctb], Benson Kenduiywo [ctb], Robert J. Hijmans [cre, aut]
+Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
 Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Mainly for processing data from the LANDSAT, MODIS, and SENTINEL platforms.
 License: GPL (>=3)
 
