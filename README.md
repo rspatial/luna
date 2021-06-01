@@ -5,7 +5,7 @@ luna is a R package with satellite remote sensing functions.
 You can install it like this: 
 
 ```
-install.packages('terra', repos='https://rspatial.r-universe.dev')
+install.packages('luna', repos='https://rspatial.r-universe.dev')
 ```
 
 Or like this:
