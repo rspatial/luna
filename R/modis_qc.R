@@ -57,7 +57,8 @@ modis_mask <- function(x, bits, qmat, ...) {
 # bits  : number of bits (16 or 32?)
 # qmat   : matrix with start and end of the bits considered and the values to be rejected
 
-	u <- terra::unique(x)
+	stopifnot(terra::nlyr(x) == 1)
+	u <- terra::unique(x)[,1]
 	v <- .unpack_reject(u, bits, qmat)
 	uv <- cbind(u,v)
 	terra::classify(x, uv, ...)
