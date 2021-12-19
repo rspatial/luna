@@ -5,8 +5,8 @@
 # Licence GPL v3
 
 
-sharpen <- function(x, p, method, weights=NULL, filename="", overwrite=FALSE, ...) {
-	if (is.null(weights)) {
+pansharpen <- function(x, p, method="Brovey", weights=NULL, filename="", overwrite=FALSE, ...) {
+	if (!is.null(weights)) {
 		stopifnot(length(weights) == nlyr(x))
 	}
 	if (method == "Brovey") {
@@ -16,15 +16,15 @@ sharpen <- function(x, p, method, weights=NULL, filename="", overwrite=FALSE, ..
 		} else {
 			(x * p) / sum(x * weights)			
 		}
-	} else if (method == "IHS") {
+	} else if (method == "HSI") {
 		x <- resample(x, p)
 		opt = SpatOptions()
-		# x must be RGB
-		x@ptr = x@ptr$rgb2hsx("hsi", opt)
+		x = colorize(x, "hsi")
 		x[[3]] = pan
-		x@ptr <- x@ptr$hsx2rgb("hsi", opt)
-		messages(x)	
-	} 
+		colorize(x, "rgb")
+	} else {
+		stop("unknown method")
+	}
 }
 
 

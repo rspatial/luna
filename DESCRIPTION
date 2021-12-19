@@ -2,9 +2,9 @@ Package: luna
 Type: Package
 Title: Tools for satellite remote sensing (Earth Observation) data processing
 Version: 0.3-3
-Date: 2021-12-14
+Date: 2021-12-19
 Depends: R (>= 3.5.0)
-Imports: terra, httr, rvest, xml2, jsonlite, meteor, signal
+Imports: terra (>= 1.5.3), httr, rvest, xml2, jsonlite, meteor, signal
 SystemRequirements: C++11
 Author: Aniruddha Ghosh [cre, aut], Alex Mandel [ctb], Benson Kenduiywo [ctb], Robert J. Hijmans [cre, aut]
 Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
