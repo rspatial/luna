@@ -6,11 +6,13 @@
 
 \description{
 Find and download MODIS data for a specific product, area, and time period. The function returned is list of filenames that may have been downloaded.
+
+It is important to fist consult \code{\link{getProducts}} to discover what products and version numbers are available, and which server to use.
 }
 
 \usage{
-getModis(product, start_date, end_date, aoi, download = FALSE, path, 
-		username, password, version="006", limit=100000, overwrite = FALSE, ...)
+getModis(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
+		username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
 }
 
 \arguments{
@@ -18,12 +20,12 @@ getModis(product, start_date, end_date, aoi, download = FALSE, path,
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
   \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. Or a SpatExtent or Extent object, or any object from which an Extent can be extracted (see examples)}
+  \item{version}{character. product version}
   \item{download}{logical. If \code{TRUE} data will be downloaded unless it is present in the download directory}
   \item{path}{character. Path name indicating where to store the data}
   \item{username}{character. EOSDIS user name (see Details)}
   \item{password}{character. EOSDIS password (see Details)}
-
-  \item{version}{character}
+  \item{server}{character. The server to download the data from}
   \item{limit}{positive integer}
   \item{overwrite}{logical}
   \item{...}{Additional arguments. These can be product specific. See Details)}

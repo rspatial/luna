@@ -4,21 +4,29 @@
 # Version 0.1
 # Licence GPL v3
 
-getModis <- function(product, start_date, end_date, aoi, download=FALSE, path, username, password,
-                     version = "006", limit = 100000, overwrite=FALSE, ...) {
-  
-    server = "LPDAAC_ECS"
+getModis <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
+			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
+ 
 	
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
 
-	pp <- .humanize()
-	pp <- pp[pp$short_name == product & pp$version == version & pp$provider == server, ]
+	h <- .humanize()
+	h <- h[h$short_name == product, ]
+	
+	pp <- h[h$version == version & h$provider == server, ]
   
 	if (nrow(pp) < 1) {
-		stop("The requested product is not available through this function")
+		if (nrow(h) < 1) {
+			stop("The requested product is not available for this through this function")
+		} else {
+			cat("Options for this product:\n")
+			print(head(h, 10))
+			cat("\n")
+			stop("The requested product is not available for this product version or server")
+		}
 	} else if (nrow(pp) > 1) {
 		warning("Multiple sources available, using first one")
 		print(pp)
@@ -62,7 +70,7 @@ modisDate <- function(filename) {
   ff <- basename(filename)
   dot <- sapply(strsplit(ff, "\\."), '[', 2)
   dates <- gsub("[aA-zZ]", "", dot)
-  dates <- substr(basename(filename), 10, 16)
+  #dates <- substr(basename(filename), 10, 16)
   dates <- dateFromYearDoy(dates)
   dm <- format(dates, "%m")
   dy <- format(dates, "%Y")
