@@ -19,7 +19,7 @@ getModis(product, start_date, end_date, aoi, version="006", download=FALSE, path
   \item{product}{character. Supported products can be found using \code{\link{getProducts}}}
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
-  \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. Or a SpatExtent or Extent object, or any object from which an Extent can be extracted (see examples)}
+  \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. It can also be a SpatExtent, or any object from which an extent can be extracted}
   \item{version}{character. product version}
   \item{download}{logical. If \code{TRUE} data will be downloaded unless it is present in the download directory}
   \item{path}{character. Path name indicating where to store the data}
