@@ -18,9 +18,9 @@ pansharpen <- function(x, p, method="Brovey", weights=NULL, filename="", overwri
 		}
 	} else if (method == "HSI") {
 		x <- resample(x, p)
-		opt = SpatOptions()
-		x = colorize(x, "hsi")
-		x[[3]] = pan
+		opt <- spatOptions()
+		x <- colorize(x, "hsi")
+		x[[3]] <- pan
 		colorize(x, "rgb")
 	} else {
 		stop("unknown method")

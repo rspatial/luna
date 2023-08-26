@@ -17,7 +17,7 @@ download_ers(scenes, path, username, password, overwrite=FALSE, ...)
   \item{path}{character. Path name indicating where to store the data}
   \item{username}{character. User name (see Details)}
   \item{password}{character. Password (see Details)}
-  \item{overwrite}{logical. If \code{FALSE}, existing files are overwritten}
+  \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
   \item{...}{additional arguments. None implemented}
 }
 

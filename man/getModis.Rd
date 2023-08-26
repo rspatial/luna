@@ -27,7 +27,7 @@ getModis(product, start_date, end_date, aoi, version="006", download=FALSE, path
   \item{password}{character. EOSDIS password (see Details)}
   \item{server}{character. The server to download the data from}
   \item{limit}{positive integer}
-  \item{overwrite}{logical}
+  \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 

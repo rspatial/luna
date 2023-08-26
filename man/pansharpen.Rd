@@ -21,6 +21,7 @@ pansharpen(x, p, method="Brovey", weights=NULL, filename="", overwrite=FALSE, ..
   \item{method}{chracter. Either "Brovey" or "HSI"}
   \item{weights}{optional vector of weights for the "Brovey" method. The weights should have a length equal to \code{nlyrs(x)} and they should normally add up to 1}
   \item{filename}{character. Output filename}
+  \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
   \item{...}{additional arguments for writing files as in \code{\link[terra]{writeRaster}}}
 }
 

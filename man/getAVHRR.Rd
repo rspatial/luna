@@ -16,7 +16,7 @@
 \arguments{
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
-  \item{overwrite}{logical. If \code{TRUE}, existing data will be overwritten}
+  \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
   \item{path}{character. Path name indicating where to store the data}
   \item{update}{logical. If \code{TRUE}, existing records of AVHRR NDVI CDR will be updated}
   \item{...}{Additional arguments that can be passed to \code{download.file})}
@@ -35,6 +35,6 @@
   start <- "2019-05-17" 
   end <- "2019-05-23"
   path <- tempdir()
-  ff <- getAVHRR(start, end, path)
+#  ff <- getAVHRR(start, end, path)
 }
 

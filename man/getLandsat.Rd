@@ -26,7 +26,7 @@ getLandsat(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download 
   \item{version}{character}
   \item{limit}{integer > 0}
   \item{server}{character. Either AWS (Landsat 8 only) or ERS. See Details}
-  \item{overwrite}{logical}
+  \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 
