@@ -59,7 +59,7 @@ getModis <- function(product, start_date, end_date, aoi, version = "006", downlo
 
 
 
-dateFromYearDoy <- function(x) {
+.dateFromYearDoy <- function(x) {
 	year <- as.integer(substr(x, 1, 4))
 	doy <- as.integer(substr(x, 5, 8))
 	return(as.Date(doy, origin=paste(year-1, "-12-31", sep='')))
@@ -71,7 +71,7 @@ modisDate <- function(filename) {
   dot <- sapply(strsplit(ff, "\\."), '[', 2)
   dates <- gsub("[aA-zZ]", "", dot)
   #dates <- substr(basename(filename), 10, 16)
-  dates <- dateFromYearDoy(dates)
+  dates <- .dateFromYearDoy(dates)
   dm <- format(dates, "%m")
   dy <- format(dates, "%Y")
   dd <- format(dates, "%d")
