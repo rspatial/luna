@@ -3,7 +3,7 @@ Type: Package
 Title: Tools for satellite remote sensing (Earth Observation) data processing
 Version: 0.3-5
 Date: 2023-11-06
-Depends: R (>= 3.4.0)
+Depends: R (>= 4.0.0)
 Imports: terra (>= 1.6-17), httr, rvest, xml2, jsonlite, meteor, signal
 Author: Aniruddha Ghosh [cre, aut], Alex Mandel [ctb], Benson Kenduiywo [ctb], Robert J. Hijmans [cre, aut]
 Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
