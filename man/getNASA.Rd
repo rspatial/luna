@@ -1,5 +1,6 @@
-\name{getModis}
+\name{getNASA}
 
+\alias{getNASA}
 \alias{getModis}
 
 \title{Find and download MODIS products}
@@ -11,6 +12,9 @@ It is important to fist consult \code{\link{getProducts}} to discover what produ
 }
 
 \usage{
+getNASA(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
+		username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
+
 getModis(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
 		username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
 }
@@ -53,7 +57,7 @@ edate <- "2019-05-23"
 area <- c(33, 34, -5, -4)
 path <- tempdir()
 # list available tiles
-f <- getModis(product = product,
+f <- getNASA(product = product,
             start_date = sdate, end_date = edate,
             aoi = area, download = FALSE, path=path)
 f
@@ -66,7 +70,7 @@ modisDate(f)
 
 usr <- "your user name"
 pwd <- "your password"
-#f <- getModis(product = product, username=urs, password=pwd,
+#f <- getNASA(product = product, username=urs, password=pwd,
 #            start_date = sdate, end_date = edate,
 #            aoi = area, download = TRUE, path=path)
 

@@ -21,7 +21,7 @@ modisDate(filename)
 data.frame
 }
 
-\seealso{ \code{\link{getModis}}} 
+\seealso{ \code{\link{getNASA}}} 
 
 \examples{  
 modisDate("MOD09A1.A2019137.h21v09.006.2019150085736.hdf")

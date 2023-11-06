@@ -1,10 +1,38 @@
-# List and Download MODIS products
+# List and Download NASA products
 # Authors: Aniruddha Ghosh, Robert J. Hijmans, Alex Mandel
 # July 2019
 # Version 0.1
 # Licence GPL v3
 
-getModis <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
+modisExtent <- function(f=NULL, h, v) {
+	r <- rast(xmin=-20015109, xmax=20015109, ymin=-10007555, ymax=10007555, nrow=18, ncol=36, crs="+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +R=6371007.181 +units=m")
+	
+	hv <- NULL
+	if (!is.null(f)) {
+		f <- gsub("hdf$", "", basename(f))
+		f <- sapply(strsplit(f, "\\."), function(i) grep("^h", i, value=TRUE)[1])
+		f <- unlist(strsplit(gsub("^h", "", f), "v"))
+		f <- as.numeric(f)
+		hv <- matrix(f, ncol=2, byrow=TRUE)
+	} else {
+		hv <- cbind(h, v)
+	}
+	
+	hv[(hv[,1] < 0) | (hv[,1] > 35), 1] <- NA
+	hv[(hv[,2] < 0) | (hv[,2] > 17), 2] <- NA
+	hv <- hv + 1
+	x <- lapply(1:nrow(hv), function(i) {
+		if (any(is.na(hv[i,]))) {
+			c(NA,NA,NA,NA)
+		} else {
+			as.vector(ext(r[hv[i,2], hv[i,1], drop=FALSE]))
+		}
+	})
+	do.call(rbind, x)
+}
+
+
+getNASA <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
 			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
  
 	
@@ -76,4 +104,16 @@ modisDate <- function(filename) {
   dy <- format(dates, "%Y")
   dd <- format(dates, "%d")
   data.frame(filename=filename, date=dates, year=dy, month=dm, day=dd, stringsAsFactors = FALSE)
+}
+
+
+getModis <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
+			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
+
+	warning("this method has been replaced by getNASA. It will be removed in future versions")
+	
+	getNASA(product=product, start_date=start_date, end_date=end_date, aoi=aoi, version =version, 
+			download=download, path=path, username=username, password=password, server = server,
+			limit =limit, overwrite=overwrite, ...)
+
 }

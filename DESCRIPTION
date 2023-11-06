@@ -1,14 +1,13 @@
 Package: luna
 Type: Package
 Title: Tools for satellite remote sensing (Earth Observation) data processing
-Version: 0.3-4
-Date: 2023-08-26
-Depends: R (>= 3.5.0)
+Version: 0.3-5
+Date: 2023-11-06
+Depends: R (>= 3.4.0)
 Imports: terra (>= 1.6-17), httr, rvest, xml2, jsonlite, meteor, signal
-SystemRequirements: C++11
 Author: Aniruddha Ghosh [cre, aut], Alex Mandel [ctb], Benson Kenduiywo [ctb], Robert J. Hijmans [cre, aut]
 Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
-Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Mainly for processing data from the LANDSAT, MODIS, and SENTINEL platforms.
+Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Including for processing data from the LANDSAT, MODIS, and SENTINEL platforms.
 License: GPL (>=3)
 BugReports: https://github.com/rspatial/luna/issues/
 

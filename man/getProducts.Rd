@@ -5,7 +5,7 @@
 \title{Find product names}
 
 \description{
-Find available product names for download. See \code{\link{getModis}} for further use.
+Find available product names for download. See \code{\link{getNASA}} for further use.
 }
 
 \usage{
@@ -22,7 +22,7 @@ getProducts(product, ...)
 character
 }
 
-\seealso{ \code{\link[luna]{getModis}} }
+\seealso{ \code{\link{getNASA}} }
 
 
 \examples{

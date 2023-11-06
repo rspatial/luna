@@ -31,6 +31,14 @@
   return(ff)
 }
 
+
+
+.yearFromDate <- function(date) {
+	date <- as.character(date)
+	as.numeric(format(as.Date(date), "%Y"))
+}
+
+
 getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update = FALSE, ...) {
   
   if(missing(start_date)) stop("provide a start_date")
@@ -57,7 +65,7 @@ getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update 
   for (i in 1:nrow(pp)){
     ff <- pp[i,]
     fname <- ff$filename
-    year <- meteor::yearFromDate(ff$date)
+    year <- .yearFromDate(ff$date)
     
     furl <- file.path(baseurl, year, fname)
     filename <- file.path(path, fname)

@@ -44,7 +44,7 @@ The EROS service from the USGS also provides other Landsat products. To use for 
 If no data is available between \code{start_date} and \code{end_date}, files for the closest dates are returned. 
 }
 
-\seealso{ \code{\link{getProducts}}, \code{\link{getModis}}}
+\seealso{ \code{\link{getProducts}}, \code{\link{getNASA}}}
 
 \examples{  
 product <- "Landsat_8_OLI_TIRS_C1"
