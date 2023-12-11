@@ -32,13 +32,6 @@
 }
 
 
-
-.yearFromDate <- function(date) {
-	date <- as.character(date)
-	as.numeric(format(as.Date(date), "%Y"))
-}
-
-
 getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update = FALSE, ...) {
   
   if(missing(start_date)) stop("provide a start_date")

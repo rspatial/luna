@@ -23,3 +23,4 @@ rsconnect/
 *.csv
 .Rproj.user
 update_fork.txt
+sent.txt
