@@ -24,10 +24,10 @@ For unmixing, a non-negative least squares (NNLS) regression which is using a se
 }
 
 \value{
-SpatRaster with one layer per endmember, with each value representing the estimated presence probability of the endmember per pixel (0 to 1), and an RMSE layer.
+SpatRaster with one layer per end-member, with each value representing the estimated presence probability of the end-member per pixel (0 to 1), and an RMSE layer.
 }
 
-\note{Depending on \code{iterate} and \code{tolerance} settings, the sum of estimated presence probabilites per pixel varies around 1.
+\note{Depending on \code{iterate} and \code{tolerance} settings, the sum of estimated presence probabilities per pixel varies around 1.
 }
 
 \references{

@@ -8,29 +8,26 @@ getCGLS <- function(product, start_date, end_date, resolution="1km", version=1, 
 		resolution <- "333m"
 		product <- paste0(product, "300")
 	}
-	
+	version <- paste0("v", version)
 	collection <- paste(product, version, resolution, sep="_")
-	dir.create(file.path(path, collection), FALSE)
+	path <- file.path(path, collection)
+	dir.create(path, FALSE, FALSE)
 
 # data provided in the data manifest of the Copernicus service.
 
-	plink <- paste0("@land.copernicus.vgt.vito.be/manifest/", collection, "/manifest_cgls_", collection, "_latest.txt" )
-
-	qurl <- paste0("https://", paste(username, password, sep=":"), plink)
-	qurl <- paste0("https://user:pwd", plink)
-
-	urls <- RCurl::getURL(qurl, ftp.use.epsv = FALSE, dirlistonly = TRUE, crlf = TRUE)
-
-	urls <- unlist(strsplit(urls, "\n"))
-	urls <- paste0("https://", paste(username, password, sep=":"), "@", sub(".*//", "", urls))
+	manif <- paste0("https://land.copernicus.vgt.vito.be/manifest/", collection, "/manifest_cgls_", collection, "_latest.txt" )
+	urls <- readLines(manif)
 	if (any(grepl("does not exist", urls))) {
 		stop("This product is not available or misspecified")
 	}
 	
+#	urls <- paste0("https://", paste(username, password, sep=":"), "@", sub(".*//", "", urls))
+	urls <- gsub("^https://", paste0("https://", username, ":", password, "@"), urls)
+	
 	d <- tolower(basename(urls))
 	d <- sapply(strsplit(d, paste0(tolower(product), "_")), function(i)i[2])
 	d <- sapply(strsplit(d, "_"), function(i) substr(i[1], 1, 8))
-	d <- as.Date(bn, "%Y%m%d")
+	d <- as.Date(d, "%Y%m%d")
 
 	start_date <- as.Date(start_date)
 	end_date <- as.Date(end_date)
@@ -41,9 +38,18 @@ getCGLS <- function(product, start_date, end_date, resolution="1km", version=1, 
 	}
 
 	outf <- file.path(path, basename(urls))
-
 	for (i in 1:length(urls)) {
-		utils::download.file(urls[i], outf[i], mode = "wb", ...)	 
+		utils::download.file(urls[i], outf[i], mode = "wb")
 	}
 	outf
 }
+
+
+
+#start_date  <- "2019-06-01"
+#end_date <- "2019-06-15"
+#product <- "fapar" 
+#resolution <- "1km" #1km, 300m or 100m
+#version = 1
+#getCGLS("fapar", "2019-06-01", "2019-06-15", resolution="1km", version=1, ".", username, password)
+

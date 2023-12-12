@@ -26,3 +26,4 @@ eviirs_ndvi <- function(region="africa/east", start_date, end_date, path) {
 	time(x) <- tm
 	x
 }
+
