@@ -111,7 +111,8 @@
   return(final_path)
 }
 
-download_ers <- function(scenes, path, username, password, overwrite=FALSE, ...){
+
+getERS <- function(scenes, path, username, password, overwrite=FALSE, ...){
   # Downloads the files from ERS using basic account login
   
   # Make sure to get the urls with the find_durls_ers function

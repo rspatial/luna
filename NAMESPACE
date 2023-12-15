@@ -1,4 +1,5 @@
-import(terra)
-exportPattern("^[^\\.\\_]")
 useDynLib(luna, .registration = TRUE)
+import(terra, methods, Rcpp)
+export("getProducts", "productInfo", "getNASA", "getLandsat", "fillVI", "filterVI", "modisDate", "modisExtent")
+exportMethods("mesma", "panSharpen")
 

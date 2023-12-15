@@ -107,13 +107,7 @@ modisDate <- function(filename) {
 }
 
 
-getModis <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
-			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
-
+getModis <- function(...) {
 	warning("this method has been replaced by getNASA. It will be removed in future versions")
-	
-	getNASA(product=product, start_date=start_date, end_date=end_date, aoi=aoi, version =version, 
-			download=download, path=path, username=username, password=password, server = server,
-			limit =limit, overwrite=overwrite, ...)
-
+	getNASA(...)
 }

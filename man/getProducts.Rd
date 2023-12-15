@@ -2,10 +2,10 @@
 
 \alias{getProducts}
 
-\title{Find product names}
+\title{Find NASA product names}
 
 \description{
-Find available product names for download. See \code{\link{getNASA}} for further use.
+Find available products in NASA's Common Metadata Repository (CMR) that can be downloaded. See \code{\link{getNASA}} for further use.
 }
 
 \usage{

@@ -10,7 +10,7 @@
 }
 
 \usage{
-  getAVHRR(start_date, end_date, path = "", overwrite = FALSE, update = FALSE, ...)
+  getAVHRR(start_date, end_date, path = "", overwrite=FALSE, update=FALSE, ...)
 }
 
 \arguments{

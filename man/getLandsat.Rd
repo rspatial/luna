@@ -10,8 +10,9 @@ The function returned is list of filenames that may have been downloaded.
 }
 
 \usage{
-getLandsat(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, download = FALSE, path, 
-		username, password, version="1", limit=100000, server="AWS", overwrite=FALSE, ...)
+getLandsat(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, aoi, 
+	download=FALSE, path, username, password, version="1", 
+	limit=100000, server="AWS", overwrite=FALSE, ...)
 }
 
 \arguments{
@@ -47,6 +48,7 @@ If no data is available between \code{start_date} and \code{end_date}, files for
 \seealso{ \code{\link{getProducts}}, \code{\link{getNASA}}}
 
 \examples{  
+
 product <- "Landsat_8_OLI_TIRS_C1"
 sdate <- "2019-05-01" 
 edate <- "2019-05-30"

@@ -1,6 +1,5 @@
 
 if (!isGeneric("mesma")) {setGeneric("mesma", function(x, ...) standardGeneric("mesma"))}
-
 setMethod("mesma", signature(x="SpatRaster"),
 	function(x, em, iterate=400, tolerance=0.00000001, ...){
 		#method = "NNLS", 

@@ -1,16 +1,22 @@
 Package: luna
 Type: Package
-Title: Tools for satellite remote sensing (Earth Observation) data processing
+Title: Tools for Satellite Remote Sensing (Earth Observation) Data Processing
 Version: 0.3-6
-Date: 2023-12-11
+Date: 2023-12-14
 Encoding: UTF-8
 Language: en-US
 Depends: R (>= 4.0.0), terra (>= 1.6.41)
 LinkingTo: Rcpp, RcppArmadillo
-Suggests: httr, rvest, xml2, jsonlite, meteor, signal, RCurl
-Author: Robert J. Hijmans [cre, aut], Aniruddha Ghosh [cre, aut], Alex Mandel [ctb], Benson Kenduiywo [ctb], Jakob Schwalb-Willmann [ctb]
+Imports: methods, Rcpp (>= 1.0-10)
+Suggests: httr, rvest, xml2, jsonlite, meteor, signal
 Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
-Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Including for processing data from the LANDSAT, MODIS, and SENTINEL platforms.
+Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Including for downloading data from NASA such as LANDSAT and MODIS.
 License: GPL (>=3)
 BugReports: https://github.com/rspatial/luna/issues/
-
+Authors@R: c(
+	person("Robert J.", "Hijmans", role=c("cre", "aut"),  
+			email = "r.hijmans@gmail.com", comment = c(ORCID = "0000-0001-5872-2872")),
+    person("Aniruddha", "Ghosh", role="aut"),
+    person("Alex", "Mandel", role="ctb"),
+    person("Benson", "Kenduiywo", role = "ctb"),
+    person("Jakob", "Schwalb-Willmann", role = "ctb"))

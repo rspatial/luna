@@ -1,7 +1,7 @@
 # Functions for getting data from Earth Explorer API
 # Requires machine to machine API approval
 # https://ers.cr.usgs.gov/profile/access
-# Documnentation of API (requires login)
+# Documentation of API (requires login)
 # https://earthexplorer.usgs.gov/inventory/documentation/json-api
 
 .EE_API_URL <- "https://earthexplorer.usgs.gov/inventory/json/v/1.4.0"
@@ -153,7 +153,8 @@
   return(dfitems)
 }
 
-download_ee <- function(product, ids, path, username, password, ...){
+
+getEE <- function(product, ids, path, username, password, ...){
   # Given the Scenes are identified via CMR, lookup the url and download
 
   # TODO: Make sure you have a valid session token

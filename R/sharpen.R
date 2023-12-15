@@ -4,28 +4,30 @@
 # Version 0.1
 # Licence GPL v3
 
+if (!isGeneric("panSharpen")) {setGeneric("panSharpen", function(x, p, ...) standardGeneric("panSharpen"))}
 
-pansharpen <- function(x, p, method="Brovey", weights=NULL, filename="", overwrite=FALSE, ...) {
-	if (!is.null(weights)) {
-		stopifnot(length(weights) == nlyr(x))
-	}
-	if (method == "Brovey") {
-		x <- resample(x, p)
-		if (is.null(weights)) {
-			(x * p) / mean(x)	
-		} else {
-			(x * p) / sum(x * weights)			
+setMethod("panSharpen", signature(x="SpatRaster", p="SpatRaster"),
+function(x, p, method="Brovey", weights=NULL, filename="", overwrite=FALSE, ...) {
+
+		method <- match.arg(tolower(method), c("brovey", "hsi"))
+		if (!is.null(weights)) {
+			stopifnot(length(weights) == nlyr(x))
 		}
-	} else if (method == "HSI") {
-		x <- resample(x, p)
-		x <- colorize(x, "hsi")
-		x[[3]] <- p
-		colorize(x, "rgb")
-	} else {
-		stop("unknown method")
+		if (method == "brovey") {
+			x <- resample(x, p)
+			if (is.null(weights)) {
+				(x * p) / mean(x)	
+			} else {
+				(x * p) / sum(x * weights)			
+			}
+		} else { #if (method == "hsi") {
+			x <- resample(x, p)
+			x <- colorize(x, "hsi")
+			x[[3]] <- p
+			colorize(x, "rgb")
+		}
 	}
-}
-
+)
 
 
 

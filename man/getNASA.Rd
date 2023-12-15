@@ -1,22 +1,18 @@
 \name{getNASA}
 
 \alias{getNASA}
-\alias{getModis}
 
-\title{Find and download MODIS products}
+\title{Find and download NASA products}
 
 \description{
-Find and download MODIS data for a specific product, area, and time period. The function returned is list of filenames that may have been downloaded.
+Find and download NASA data for a specific product, area, and time period. The function returned is list of filenames that may have been downloaded.
 
 It is important to fist consult \code{\link{getProducts}} to discover what products and version numbers are available, and which server to use.
 }
 
 \usage{
 getNASA(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
-		username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
-
-getModis(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
-		username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
+	username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
 }
 
 \arguments{

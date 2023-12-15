@@ -1,15 +1,15 @@
-\name{download_ee}
+\name{getEE}
 
-\alias{download_ee}
+\alias{getEE}
 
 \title{download from Earth Explorer}
 
 \description{
-Find and download ee data 
+Find and download Earth Explorer data 
 }
 
 \usage{
-download_ee(product, ids, path, username, password, ...)
+getEE(product, ids, path, username, password, ...)
 }
 
 \arguments{
@@ -32,8 +32,4 @@ This function is an R interface to the Earth Explores system. Access is free, bu
 }
 
 \seealso{\code{\link{getLandsat}}} 
-
-\examples{  
-# to do
-}
 

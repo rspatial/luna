@@ -1,5 +1,5 @@
 
-eviirs_ndvi <- function(region="africa/east", start_date, end_date, path) {
+.eviirs_ndvi <- function(region="africa/east", start_date, end_date, path) {
 	url = paste0("https://edcintl.cr.usgs.gov/downloads/sciweb1/shared/fews/web/", region, 
 			"pentadal/eviirs/ndvi/temporallysmoothedndvi/downloads/pentadal/")
 

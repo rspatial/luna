@@ -81,7 +81,7 @@ getLandsat <- function(product="Landsat_8_OLI_TIRS_C1", start_date, end_date, ao
 			if (server=="AWS") {
 				files <- .cmr_download(urls = fileurls, path = path, username=username, password=password, overwrite = overwrite)			
 			} else if (server=="EROS") {
-				files <- download_ers(scenes = fileurls, path = path, username=username, password=password, overwrite = overwrite)
+				files <- getERS(scenes = fileurls, path = path, username=username, password=password, overwrite = overwrite)
 			}
 			
 		  # TODO: This is going to return junk names for things from ERS 

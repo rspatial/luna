@@ -1,8 +1,8 @@
-\name{getGCLS}
+\name{getCGLS}
 
-\alias{getGCLS}
+\alias{getCGLS}
 
-\title{Download GCLS products}
+\title{Download CGLS products}
 
 \description{
 Download data provided by the Copernicus Global Land Service (https://land.copernicus.eu/global/)
@@ -12,7 +12,8 @@ See https://land.copernicus.eu/global/products/ for a product overview and produ
 }
 
 \usage{
-getCGLS(product, start_date, end_date, resolution="1km", version=1, path, username, password, ...)
+getCGLS(product, start_date, end_date, resolution="1km", 
+		version=1, path, username, password, ...)
 }
 
 \arguments{
@@ -32,7 +33,4 @@ SpatRaster
 }
 
 \seealso{\code{\link{getNASA}}} 
-
-\examples{  
-}
 

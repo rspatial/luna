@@ -8,6 +8,3 @@
 \description{
 \packageDescription{luna}
 }
-\details{
-coming soon
-}

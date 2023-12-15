@@ -2,10 +2,10 @@
 
 \alias{productInfo}
 
-\title{Load complete product information}
+\title{NASA product information}
 
 \description{
-Load complete product information in the corresponding product website. Opens the default borwser. See \code{\link{getProducts}} for available options of products.
+Get complete product information in the corresponding product website. The information is displayed in the default browser. See \code{\link{getProducts}} for available options of products.
 }
 
 \usage{
