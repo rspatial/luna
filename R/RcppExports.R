@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .nnls_solver <- function(x, A, iterate = 400L, tolerance = 0.000001) {
-    .Call('_luna_nnls_solver', PACKAGE = 'luna', x, A, iterate, tolerance)
+    .Call(`_luna_nnls_solver`, x, A, iterate, tolerance)
 }
 

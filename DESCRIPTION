@@ -7,8 +7,8 @@ Encoding: UTF-8
 Language: en-US
 Depends: R (>= 4.0.0), terra (>= 1.6.41)
 LinkingTo: Rcpp, RcppArmadillo
-Imports: methods, Rcpp (>= 1.0-10)
-Suggests: httr, rvest, xml2, jsonlite, meteor, signal
+Imports: methods, Rcpp (>= 1.0-10), httr
+Suggests: rvest, xml2, jsonlite, meteor, signal
 Maintainer: Robert J. Hijmans <r.hijmans@gmail.com>
 Description: Tools for acquiring and (pre-) processing satellite remote sensing data. Including for downloading data from NASA such as LANDSAT and MODIS.
 License: GPL (>=3)
@@ -20,3 +20,4 @@ Authors@R: c(
     person("Alex", "Mandel", role="ctb"),
     person("Benson", "Kenduiywo", role = "ctb"),
     person("Jakob", "Schwalb-Willmann", role = "ctb"))
+RoxygenNote: 7.3.2

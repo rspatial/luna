@@ -73,13 +73,14 @@
 	return(results)
 }
 
-.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, ...){
+.cmr_download_one <- function(url, path, netrc, overwrite, ...){
   # Download a single result
   # TODO check if file exists
 	outfile <- file.path(path, basename(url))
 	if ((!file.exists(outfile)) | overwrite){
-		if(!is.null(USERNAME)){
-			f <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
+		if(!is.null(netrc)){
+			f = GET(url, write_disk(outfile, overwrite = overwrite), progress(),
+			                config(netrc = TRUE, netrc_file = netrc), set_cookies("LC" = "cookies"))
 		} else {
 			f <- utils::download.file(url, outfile, mode = "wb") 
 			return(f)
@@ -88,14 +89,31 @@
 	return(outfile)
 } 
 
+.get_netrc = function(username, password) {
+  usr <- file.path(Sys.getenv("USERPROFILE")) # Retrieve home dir (for netrc file)
+  if (usr == "") {usr = Sys.getenv("HOME")} # If no user profile exists, use home
+  netrc <- file.path(usr,'.netrc', fsep = .Platform$file.sep) # Path to netrc file
+  
+  if (file.exists(netrc) == FALSE || grepl("urs.earthdata.nasa.gov", readLines(netrc)[1]) == FALSE) {
+    netrc_conn <- file(netrc)
+    
+    # User will be prompted for NASA Earthdata Login Username and Password below
+    writeLines(c("machine urs.earthdata.nasa.gov",
+                 sprintf("login %s", username),
+                 sprintf("password %s", password)), netrc_conn)
+    close(netrc_conn)
+  }
+  netrc <- file.path(usr,'.netrc', fsep = .Platform$file.sep) # Path to netrc file
+  return(netrc)
+}
 
 .cmr_download <- function(urls, path, username, password, overwrite, ...){
   # Given a list of results, download all of them
-  
+  netrc = .get_netrc(username, password) # get netrc file
 	files <- rep("", length(urls))
 	for (i in 1:length(urls)) {
 		f <- tryCatch(
-				.cmr_download_one(urls[i], path, username, password, overwrite), 
+				.cmr_download_one(urls[i], path, netrc, overwrite), 
 				error = function(e){e}
 			)
 		if (inherits(f, "error")) {
