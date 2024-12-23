@@ -2,12 +2,12 @@
 # This could be an internal function to download AVHRR files
 
 .listAVHRR <- function(path, update=FALSE, baseurl) {
-	cat("Creating index of available AVHRR files on", as.character(Sys.Date()), "\n")
 	# Two-day delay in ingestion
 	filename <- paste0("avhrr_files_", Sys.Date(),".rds")
 	filename <- file.path(path, filename)
 	
 	if (!file.exists(filename) | update){
+		message("Creating index of available AVHRR files on", as.character(Sys.Date()))
 		startyear <- 1981
 		endyear <- format(as.Date(Sys.Date(), format="%d/%m/%Y"),"%Y")
 		years <- seq(startyear, endyear)
@@ -32,7 +32,7 @@
 }
 
 
-getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update = FALSE, ...) {
+getAVHRR <- function(start_date, end_date, path, download=FALSE, overwrite=FALSE, update=FALSE, quiet=FALSE, ...) {
 	
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
@@ -43,7 +43,7 @@ getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update 
 	path <- .getPath(path)
 	
 	# list of AVHRR files
-	pp <- .listAVHRR(path = path, baseurl = baseurl, update = FALSE)
+	pp <- .listAVHRR(path=path, baseurl=baseurl, update=FALSE)
 	
 	# TODO: alternate search through CMR
 	# https://cmr.earthdata.nasa.gov/search/concepts/C1277746140-NOAA_NCEI
@@ -51,42 +51,51 @@ getAVHRR <- function(start_date, end_date, path = "", overwrite = FALSE, update 
 	# subset the files by dates
 	pp <- pp[pp$date >= start_date & pp$date <= end_date, ]
 	
-	if(nrow(pp) == 0) {stop("No AVHRR file available for the date range provided")}
-	
+	if(nrow(pp) == 0) {
+		warning("No AVHRR file available for the date range provided")
+		return(NULL)
+	}
+	if (!download) return(pp$filename)
+
 	# to store output file names
 	
+	failed <- rep(FALSE, nrow(pp))
+
+	year <- .yearFromDate(pp$date)
+	furl <- file.path(baseurl, year, pp$filename)
+	filenames <- file.path(path, pp$filename)
+
 	for (i in 1:nrow(pp)){
-		ff <- pp[i,]
-		fname <- ff$filename
-		year <- .yearFromDate(ff$date)
-		
-		furl <- file.path(baseurl, year, fname)
-		filename <- file.path(path, fname)
 		
 		# is ok, if file exists or overwrite is TRUE
-		ok <- (file.exists(filename) | overwrite)
+		ok <- file.exists(filenames[i]) && (!overwrite)
 		
-		# what if the download is bad; less than 50 mb
-		# there must be a better way
-		if(file.exists(filename)){
-			fsz <- round(file.size(filename)/(1024^2))
-			if (fsz < 50) ok <- FALSE
+		if (file.exists(filenames[i])) {
+			x <- try(rast(filenames[i]), silent=TRUE)
+			if (inherits(x, "try-error")) {
+				ok <- FALSE
+			}
 		}
 		
-		if (!ok){
-		cat("Downloading AVHRR tile for", as.character(ff$date), "\n")
-		ff <- try(utils::download.file(furl, filename, mode = "wb", overwrite, quiet = TRUE)) 
-		} 
-		
-		if (inherits(ff, "try-error")) next
+		if (!ok) {
+			if (!quiet) message(pp$filename[i])
+			ff <- try(utils::download.file(furl[i], filenames[i], mode="wb", quiet=quiet, ...)) 
+			if (inherits(ff, "try-error")) {
+			failed[i] <- TRUE
+			}
+		}
 	}
+	if (any(failed)) {
+		message(paste("download failed for", sum(failed), "file(s)"))
+	}
+	filenames
 }
 
 # TODO
 # parallel download
 # processAVHRR <- function(ff){
-#	 ndvi <- raster::raster(ff, varname = "NDVI")
-#	 qa <- raster::raster(ff, varname = "QA")
+#	 ndvi <- rast(ff, varname = "NDVI")
+#	 qa <- rast(ff, varname = "QA")
 #	 # Quality unpack --- page 29 of 
 #	 # https://www1.ncdc.noaa.gov/pub/data/sds/cdr/CDRs/Normalized%20Difference%20Vegetation%20Index/AlgorithmDescription_01B-20b.pdf
 # }
