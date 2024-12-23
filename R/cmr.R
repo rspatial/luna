@@ -73,13 +73,26 @@
 	return(results)
 }
 
-.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, ...){
+.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, ...){
   # Download a single result
   # TODO check if file exists
+# Make the request with cookies and follow redirects
 	outfile <- file.path(path, basename(url))
 	if ((!file.exists(outfile)) | overwrite){
 		if(!is.null(USERNAME)){
-			f <- httr::GET(url, httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
+			f <- httr::GET(url, 
+                httr::add_headers(Cookie = readLines(cookie_file)),
+                httr::set_cookies(file = cookie_file),
+                httr::config(
+					netrc = TRUE, 
+					followlocation = TRUE, 
+					ssl_verifypeer = 0
+				),
+				httr::progress(), 
+				httr::write_disk(outfile, overwrite = overwrite)
+			)
+						
+#			httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
 		} else {
 			f <- utils::download.file(url, outfile, mode = "wb") 
 			return(f)
@@ -93,9 +106,17 @@
   # Given a list of results, download all of them
   
 	files <- rep("", length(urls))
+	cookie_file <- file.path(tempdir(), "cookies.XXXXXXXXXX")
+	writeLines("", cookie_file)
+	netrc_file <- file.path(tempdir(), "netrc.XXXXXXXXXX")
+	txt <- paste("machine urs.earthdata.nasa.gov login", username, "password", password)
+	writeLines(txt, netrc_file)
+	httr::set_config(httr::config(netrc_file = netrc_file))		
+	on.exit(file.remove(c(netrc_file, cookie_file)))
+	
 	for (i in 1:length(urls)) {
 		f <- tryCatch(
-				.cmr_download_one(urls[i], path, username, password, overwrite), 
+				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file, ...), 
 				error = function(e){e}
 			)
 		if (inherits(f, "error")) {
