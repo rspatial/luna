@@ -131,11 +131,11 @@
 	return(files)
 }
 
-.searchGranules <- function(product="MOD09A1", start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
+.searchGranules <- function(product, version=version, start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
   #Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
-  #:return: dataframe of results
+  #:return: urls
   
 	e <- .getExtent(extent)
 	  
@@ -148,7 +148,8 @@
 	params <- list(
 		short_name=product,	temporal=temporal, downloadable="true", bounding_box=e
 	)
-	  
+	params$version <- version
+
 	pars <- list(...) 
 	if (length(pars) > 0) {
 		params <- c(params, pars)
@@ -156,8 +157,7 @@
 	  
 	cmr_host="https://cmr.earthdata.nasa.gov"
 	url <- file.path(cmr_host, "search/granules")
-	results <- .get_search_results(url=url, limit=limit, kwargs=params)
-	return(results) 
+	.get_search_results(url=url, limit=limit, kwargs=params)
 }
 
 # CMR download attempt

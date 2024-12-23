@@ -11,7 +11,7 @@ It is important to fist consult \code{\link{getProducts}} to discover what produ
 }
 
 \usage{
-getNASA(product, start_date, end_date, aoi, version="006", download=FALSE, path, 
+getNASA(product, start_date, end_date, aoi, version=NULL, download=FALSE, path, 
 	username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
 }
 
@@ -20,7 +20,7 @@ getNASA(product, start_date, end_date, aoi, version="006", download=FALSE, path,
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
   \item{aoi}{numeric vector of four elements (minimum longitude, maximum longitude, minimum latitude, maximum latitude) encompassing the area of interest. It can also be a SpatExtent, or any object from which an extent can be extracted}
-  \item{version}{character. product version}
+  \item{version}{character. product version number}
   \item{download}{logical. If \code{TRUE} data will be downloaded unless it is present in the download directory}
   \item{path}{character. Path name indicating where to store the data}
   \item{username}{character. EOSDIS user name (see Details)}

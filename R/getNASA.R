@@ -32,7 +32,7 @@ modisExtent <- function(f=NULL, h, v) {
 }
 
 
-getNASA <- function(product, start_date, end_date, aoi, version = "006", download=FALSE, path, 
+getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=FALSE, path, 
 			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
  
 	
@@ -41,11 +41,15 @@ getNASA <- function(product, start_date, end_date, aoi, version = "006", downloa
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
 
-	h <- .humanize()
+	h <- luna:::.humanize()
 	h <- h[h$short_name == product, ]
 	
-	pp <- h[h$version == version & h$provider == server, ]
-  
+	if (!is.null(version)) {
+		pp <- h[h$version == version & h$provider == server, ]
+	} else {
+		pp <- h[h$provider == server, ]	
+	}
+	
 	if (nrow(pp) < 1) {
 		if (nrow(h) < 1) {
 			stop("The requested product is not available for this through this function")
@@ -60,10 +64,9 @@ getNASA <- function(product, start_date, end_date, aoi, version = "006", downloa
 		print(pp)
 		pp <- pp[1, ]
 	}
-	
-  
+	  
   # find product urls, does not require credentials
-	results <- .searchGranules(product = product, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
+	results <- .searchGranules(product = product, version=version, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	urls <- unique(results[, "Online Access URLs"])
 
 	if (length(urls) > 0) {
@@ -80,7 +83,11 @@ getNASA <- function(product, start_date, end_date, aoi, version = "006", downloa
 			return(basename(urls))
 		}
 	} else {
-		print("No results found")
+		if (!is.null(version)) {
+			print(paste("No downloadable results found for this version:", version))
+		} else {
+			print("No results found")
+		}
 		return(NULL)
 	}
 }
