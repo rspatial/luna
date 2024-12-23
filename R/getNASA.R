@@ -49,6 +49,12 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 	} else {
 		pp <- h[h$provider == server, ]	
 	}
+	pp$concept_id <- NULL
+	pp$version <- NULL
+	pp$humanized_value <- NULL
+	pp$original_value <- NULL
+	
+	pp <- unique(pp)
 	
 	if (nrow(pp) < 1) {
 		if (nrow(h) < 1) {
@@ -84,9 +90,9 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 		}
 	} else {
 		if (!is.null(version)) {
-			print(paste("No downloadable results found for this version:", version))
+			warning(paste("No downloadable results found for this version:", version))
 		} else {
-			print("No results found")
+			warning("No results found")
 		}
 		return(NULL)
 	}

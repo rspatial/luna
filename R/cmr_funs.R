@@ -22,7 +22,7 @@ getProducts <- function(product, ...){
 
 # humanizers report for the list of dataset available through CMR https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
 # use this file to get an updated list of dataset that can searched (not always downloadable) via cmr
-
+# curl "https://cmr.earthdata.nasa.gov/search/humanizers/report" --ssl-no-revoke --output human.csv
 .humanize <- function(...) {
 	f <- system.file("cmr/cmr_sources.rds", package="luna")
 	d <- readRDS(f)
