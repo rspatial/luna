@@ -1,5 +1,5 @@
 useDynLib(luna, .registration = TRUE)
 import(terra, methods, Rcpp)
-export("getProducts", "productInfo", "getNASA", "getAVHRR", "getLandsat", "fillVI", "filterVI", "modisDate", "modisExtent")
+export("getProducts", "productInfo", "getNASA", "getAVHRR", "getLandsat", "fillVI", "filterVI", "modisDate", "modisExtent", "modis_mask")
 exportMethods("mesma", "panSharpen")
 

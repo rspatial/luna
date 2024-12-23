@@ -1,8 +1,8 @@
 Package: luna
 Type: Package
 Title: Tools for Satellite Remote Sensing (Earth Observation) Data Processing
-Version: 0.3-6
-Date: 2023-12-14
+Version: 0.3-7
+Date: 2024-12-23
 Encoding: UTF-8
 Language: en-US
 Depends: R (>= 4.0.0), terra (>= 1.6.41)
