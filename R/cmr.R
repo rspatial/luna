@@ -116,7 +116,7 @@
 	
 	for (i in 1:length(urls)) {
 		f <- tryCatch(
-				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file, ...), 
+				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file), 
 				error = function(e){e}
 			)
 		if (inherits(f, "error")) {
