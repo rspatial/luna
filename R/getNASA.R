@@ -57,13 +57,23 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 	pp <- unique(pp)
 	
 	if (nrow(pp) < 1) {
+		sug  <- .suggest_products(product, version = version)
+		hint <- if (length(sug) > 0) {
+			paste0(" Did you mean: ", paste(sug, collapse = ", "), "?")
+		} else ""
 		if (nrow(h) < 1) {
-			stop("The requested product is not available for this through this function")
+			stop("Product '", product, "' is not in the CMR collection cache.", hint,
+			     " Use `getProducts(...)` to search available products.",
+			     call. = FALSE)
 		} else {
-			cat("Options for this product:\n")
-			print(head(h, 10))
-			cat("\n")
-			stop("The requested product is not available for this product version or server")
+			avail <- unique(h[, c("provider", "version")])
+			avail <- paste0("'", avail$version, "' (", avail$provider, ")", collapse = ", ")
+			stop("Product '", product, "'",
+			     if (!is.null(version)) paste0(" version '", version, "'") else "",
+			     " is not available from server '", server, "'.",
+			     " Available (version, provider) combinations: ", avail, ".",
+			     hint,
+			     call. = FALSE)
 		}
 	} else if (nrow(pp) > 1) {
 		warning("Multiple sources available, using first one")
@@ -89,13 +99,53 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 			return(basename(urls))
 		}
 	} else {
-		if (!is.null(version)) {
-			warning(paste("No downloadable results found for this version:", version))
+		msg <- if (!is.null(version)) {
+			sprintf("No downloadable granules found for product='%s' version='%s'.", product, version)
 		} else {
-			warning("No results found")
+			sprintf("No downloadable granules found for product='%s'.", product)
 		}
+		sug <- .suggest_products(product, version = version)
+		if (length(sug) > 0) {
+			msg <- paste0(msg, " Did you mean: ",
+			              paste(sug, collapse = ", "),
+			              "? Use `getProducts('", substr(product, 1, max(4, nchar(product) - 2)),
+			              "')` to list related products.")
+		}
+		warning(msg, call. = FALSE)
 		return(NULL)
 	}
+}
+
+
+# Suggest similar product short_names from the cached humanize table.
+#
+# Walk the input product name from full length down to its first 4 characters,
+# collecting short_names that contain the (shrinking) needle as a substring.
+# When `version` is provided, prefer candidates that have that version in the
+# cache - this picks out the actual successor product (e.g. MOD17A3HGF for
+# MOD17A3H + v061) instead of less useful name-twins.
+.suggest_products <- function(product, version = NULL, n = 5) {
+	d <- .humanize()
+	short_names <- unique(d$short_name)
+
+	pool <- character(0)
+	needle <- product
+	while (nchar(needle) >= 4) {
+		hits <- short_names[grepl(needle, short_names, fixed = TRUE)]
+		hits <- setdiff(hits, c(product, pool))
+		pool <- c(pool, hits)
+		needle <- substr(needle, 1, nchar(needle) - 1)
+	}
+	if (length(pool) == 0) return(character(0))
+
+	if (!is.null(version) && nzchar(version)) {
+		with_v   <- intersect(pool, d$short_name[d$version == version])
+		without  <- setdiff(pool, with_v)
+		ranked   <- c(with_v, without)
+	} else {
+		ranked <- pool
+	}
+	head(unique(ranked), n)
 }
 
 
