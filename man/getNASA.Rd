@@ -41,6 +41,8 @@ Character vector of file names pointing to the downloaded files (if \code{downlo
 \details{
 This function is an R interface to the EOSDIS system. Access is free, but it requires a "Earthdata" account. If you do not have an account, you can sign up here: \url{https://urs.earthdata.nasa.gov/users/new}
 
+In addition to having an account, before you can download a particular product you must accept its End User License Agreement (EULA). The EULA is presented when you first try to download a product through the EOSDIS web interface, and can also be reviewed under your profile at \url{https://urs.earthdata.nasa.gov/}. If your credentials are wrong or you have not accepted the EULA, downloads will fail with an authentication error rather than silently saving an HTML error page as if it were data.
+
 If no data is available between \code{start_date} and \code{end_date}, files for the closest dates are returned. 
 }
 

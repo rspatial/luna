@@ -73,59 +73,110 @@
 	return(results)
 }
 
-.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, verbose=TRUE, ...){
-  # Download a single result
-  # TODO check if file exists
-# Make the request with cookies and follow redirects
-	outfile <- file.path(path, basename(url))
-	if ((!file.exists(outfile)) | overwrite){
-		if(!is.null(USERNAME)){
-			args <- list(url,
-                httr::add_headers(Cookie = readLines(cookie_file)),
-                httr::set_cookies(file = cookie_file),
-                httr::config(
-					netrc = TRUE,
-					followlocation = TRUE,
-					ssl_verifypeer = 0
-				),
-				httr::write_disk(outfile, overwrite = overwrite)
-			)
-			if (verbose) {
-				args <- c(args, list(httr::progress()))
-			}
-			f <- do.call(httr::GET, args)
+.cmr_outfile <- function(url, path) {
+  # Strip URL query/fragment so signed S3 URLs (?X-Amz-...) do not leak into filenames
+	clean <- sub("[?#].*$", "", url)
+	file.path(path, basename(clean))
+}
 
-#			httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
+.cmr_auth_error <- function(msg, status = NA_integer_) {
+	structure(
+		class = c("luna_auth_error", "error", "condition"),
+		list(message = msg, call = sys.call(-1), status = status)
+	)
+}
+
+.cmr_validate_response <- function(f, outfile) {
+  # Returns NULL on success; an error condition on failure.
+	status <- httr::status_code(f)
+	hdrs   <- httr::headers(f)
+	ctype  <- hdrs[["content-type"]]
+	if (status == 401 || status == 403) {
+		return(.cmr_auth_error(
+			sprintf("Earthdata authentication failed (HTTP %d). Check your `username`/`password` and that you have accepted the data product's EULA at https://urs.earthdata.nasa.gov/.", status),
+			status = status))
+	}
+	if (status != 200) {
+		return(simpleError(sprintf("HTTP %d for %s", status, f$url)))
+	}
+	if (!is.null(ctype) && grepl("html", ctype, ignore.case = TRUE)) {
+		return(simpleError(sprintf("server returned an HTML page (likely a login or error page) instead of data for %s", f$url)))
+	}
+	if (file.exists(outfile) && isTRUE(file.info(outfile)$size < 1)) {
+		return(simpleError(sprintf("downloaded file is empty: %s", outfile)))
+	}
+	NULL
+}
+
+.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, netrc_file, verbose=TRUE, ...){
+  # Download a single granule. Validates the response so that an HTML auth/error
+  # page is never silently saved under a .hdf filename (issue #38).
+	outfile <- .cmr_outfile(url, path)
+
+  # If a previous run saved a tiny file (almost certainly a stale auth-failure
+  # page), retry it even when overwrite=FALSE.
+	if (file.exists(outfile) && !overwrite) {
+		fsz <- file.info(outfile)$size
+		if (isTRUE(fsz < 1024)) {
+			file.remove(outfile)
 		} else {
-			f <- utils::download.file(url, outfile, mode = "wb", quiet = !verbose)
-			return(f)
+			return(outfile)
 		}
 	}
-	return(outfile)
-} 
+
+	if (!is.null(USERNAME)) {
+		cfg <- httr::config(
+			netrc = TRUE,
+			netrc_file = netrc_file,
+			followlocation = TRUE,
+			ssl_verifypeer = 0,
+			cookiefile = cookie_file,
+			cookiejar = cookie_file
+		)
+		args <- list(url, cfg, httr::write_disk(outfile, overwrite = TRUE))
+		if (verbose) args <- c(args, list(httr::progress()))
+		f <- do.call(httr::GET, args)
+
+		err <- .cmr_validate_response(f, outfile)
+		if (!is.null(err)) {
+			if (file.exists(outfile)) file.remove(outfile)
+			stop(err)
+		}
+	} else {
+		f <- utils::download.file(url, outfile, mode = "wb", quiet = !verbose)
+		return(f)
+	}
+	outfile
+}
 
 
 .cmr_download <- function(urls, path, username, password, overwrite, verbose=TRUE, ...){
-  # Given a list of results, download all of them
-  
+  # Given a list of results, download all of them. Aborts on the first
+  # authentication failure so we do not produce N broken files.
+
 	files <- rep("", length(urls))
-	cookie_file <- file.path(tempdir(), "cookies.XXXXXXXXXX")
-	writeLines("", cookie_file)
-	netrc_file <- file.path(tempdir(), "netrc.XXXXXXXXXX")
-	txt <- paste("machine urs.earthdata.nasa.gov login", username, "password", password)
-	writeLines(txt, netrc_file)
-	httr::set_config(httr::config(netrc_file = netrc_file))		
-	on.exit(file.remove(c(netrc_file, cookie_file)))
-	
-	for (i in 1:length(urls)) {
+	cookie_file <- tempfile("luna_cookies_", fileext = ".txt")
+	file.create(cookie_file)
+	netrc_file <- tempfile("luna_netrc_",  fileext = ".txt")
+	writeLines(
+		paste("machine urs.earthdata.nasa.gov login", username, "password", password),
+		netrc_file
+	)
+	on.exit(file.remove(c(netrc_file, cookie_file)), add = TRUE)
+
+	for (i in seq_along(urls)) {
 		f <- tryCatch(
-				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file, verbose=verbose), 
-				error = function(e){e}
-			)
+			.cmr_download_one(urls[i], path, username, password, overwrite,
+			                  cookie_file, netrc_file, verbose=verbose),
+			luna_auth_error = function(e) e,
+			error = function(e) e
+		)
+		if (inherits(f, "luna_auth_error")) {
+		  # Same credentials apply to every URL, so further attempts will all fail.
+			stop(conditionMessage(f), call. = FALSE)
+		}
 		if (inherits(f, "error")) {
-			warning("failure: ", urls[i])
-			f <- file.path(path, urls[i])
-			if ( isTRUE(file.info(f)$size < 1) ) file.remove(f)
+			warning("failure: ", urls[i], ": ", conditionMessage(f), call. = FALSE)
 		} else {
 			files[i] = urls[i]
 		}
