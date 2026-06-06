@@ -134,7 +134,7 @@
 	return(files)
 }
 
-.searchGranules <- function(product, version=version, start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
+.searchGranules <- function(product, version=NULL, start_date, end_date, extent, limit=100, datesuffix = "T00:00:00Z", ...){
   #Search the CMR granules
   #:param limit: limit of the number of results
   #:param kwargs: search parameters
