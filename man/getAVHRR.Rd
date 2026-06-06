@@ -9,18 +9,18 @@
 }
 
 \usage{
-getAVHRR(start_date, end_date, path, overwrite=FALSE, update=FALSE, download=TRUE, quiet=FALSE, ...)
+getAVHRR(start_date, end_date, path, download=FALSE, overwrite=FALSE, update=FALSE, quiet=FALSE, ...)
 }
 
 \arguments{
   \item{start_date}{character. Start date for the data requested formatted yyyy-m-d}
   \item{end_date}{Character. end date for the data requested formatted yyyy-m-d}
   \item{path}{character. Path to download data to}
+  \item{download}{logical. If \code{TRUE}, the files are downloaded. If \code{FALSE} (the default), only the file names that match the date range are returned}
   \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
-  \item{update}{logical. If \code{TRUE}, existing records of AVHRR NDVI CDR will be updated}
-  \item{download}{logical. Should the files be downloaded if not available on \code{path}?}
-  \item{quiet}{logical. Should messages be printed to track the download progress?}
-  \item{...}{Additional arguments that can be passed to \code{download.file})}
+  \item{update}{logical. If \code{TRUE}, the cached index of available AVHRR NDVI CDR files is refreshed}
+  \item{quiet}{logical. If \code{TRUE}, messages and the download progress bar are suppressed}
+  \item{...}{Additional arguments passed to \code{\link[utils]{download.file}} (for example \code{method})}
 }
 
 

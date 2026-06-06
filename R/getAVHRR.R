@@ -43,7 +43,7 @@ getAVHRR <- function(start_date, end_date, path, download=FALSE, overwrite=FALSE
 	path <- .getPath(path)
 	
 	# list of AVHRR files
-	pp <- .listAVHRR(path=path, baseurl=baseurl, update=FALSE)
+	pp <- .listAVHRR(path=path, baseurl=baseurl, update=update)
 	
 	# TODO: alternate search through CMR
 	# https://cmr.earthdata.nasa.gov/search/concepts/C1277746140-NOAA_NCEI
