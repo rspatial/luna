@@ -41,7 +41,7 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
 
-	h <- luna:::.humanize()
+	h <- .humanize()
 	h <- h[h$short_name == product, ]
 	
 	if (!is.null(version)) {
