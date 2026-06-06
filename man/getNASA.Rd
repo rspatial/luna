@@ -12,7 +12,8 @@ It is important to fist consult \code{\link{getProducts}} to discover what produ
 
 \usage{
 getNASA(product, start_date, end_date, aoi, version=NULL, download=FALSE, path, 
-	username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE, ...)
+	username, password, server="LPDAAC_ECS", limit=100000, overwrite=FALSE,
+	verbose=TRUE, ...)
 }
 
 \arguments{
@@ -28,6 +29,7 @@ getNASA(product, start_date, end_date, aoi, version=NULL, download=FALSE, path,
   \item{server}{character. The server to download the data from}
   \item{limit}{positive integer}
   \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
+  \item{verbose}{logical. If \code{FALSE}, progress bars and other messages printed during downloading are suppressed}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
 
