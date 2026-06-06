@@ -33,7 +33,7 @@ modisExtent <- function(f=NULL, h, v) {
 
 
 getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=FALSE, path, 
-			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, ...) {
+			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, verbose=TRUE, ...) {
  
 	
 	if(missing(product)) stop("provide a product name")
@@ -67,7 +67,7 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 		}
 	} else if (nrow(pp) > 1) {
 		warning("Multiple sources available, using first one")
-		print(pp)
+		if (verbose) print(pp)
 		pp <- pp[1, ]
 	}
 	  
@@ -81,7 +81,7 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 			if(missing(username)) stop("provide a username")
 			if(missing(password)) stop("provide a password")
 
-			ff <- .cmr_download(urls, path, username, password, overwrite)			
+			ff <- .cmr_download(urls, path, username, password, overwrite, verbose=verbose)			
 
 			ff <- file.path(path, basename(urls))	
 			return(ff)		 

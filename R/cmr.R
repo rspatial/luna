@@ -73,28 +73,31 @@
 	return(results)
 }
 
-.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, ...){
+.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, verbose=TRUE, ...){
   # Download a single result
   # TODO check if file exists
 # Make the request with cookies and follow redirects
 	outfile <- file.path(path, basename(url))
 	if ((!file.exists(outfile)) | overwrite){
 		if(!is.null(USERNAME)){
-			f <- httr::GET(url, 
+			args <- list(url,
                 httr::add_headers(Cookie = readLines(cookie_file)),
                 httr::set_cookies(file = cookie_file),
                 httr::config(
-					netrc = TRUE, 
-					followlocation = TRUE, 
+					netrc = TRUE,
+					followlocation = TRUE,
 					ssl_verifypeer = 0
 				),
-				httr::progress(), 
 				httr::write_disk(outfile, overwrite = overwrite)
 			)
-						
+			if (verbose) {
+				args <- c(args, list(httr::progress()))
+			}
+			f <- do.call(httr::GET, args)
+
 #			httr::authenticate(USERNAME, PASSWORD), httr::progress(), httr::write_disk(outfile, overwrite = overwrite))
 		} else {
-			f <- utils::download.file(url, outfile, mode = "wb") 
+			f <- utils::download.file(url, outfile, mode = "wb", quiet = !verbose)
 			return(f)
 		}
 	}
@@ -102,7 +105,7 @@
 } 
 
 
-.cmr_download <- function(urls, path, username, password, overwrite, ...){
+.cmr_download <- function(urls, path, username, password, overwrite, verbose=TRUE, ...){
   # Given a list of results, download all of them
   
 	files <- rep("", length(urls))
@@ -116,7 +119,7 @@
 	
 	for (i in 1:length(urls)) {
 		f <- tryCatch(
-				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file), 
+				.cmr_download_one(urls[i], path, username, password, overwrite, cookie_file, verbose=verbose), 
 				error = function(e){e}
 			)
 		if (inherits(f, "error")) {
@@ -127,7 +130,7 @@
 			files[i] = urls[i]
 		}
 	}
-	cat("\n")
+	if (verbose) cat("\n")
 	return(files)
 }
 
