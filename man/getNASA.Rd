@@ -31,7 +31,7 @@ getNASA(product, start_date, end_date, aoi, version=NULL, download=FALSE, path,
   \item{server}{character. The server to download the data from}
   \item{limit}{positive integer}
   \item{overwrite}{logical. If \code{TRUE}, existing files are overwritten}
-  \item{pattern}{optional character vector of regular expressions. Granules whose filename (the basename of the download URL) does not match any of the patterns are dropped, both from the returned vector and from the set that would be downloaded. The match is case-insensitive and uses Perl-style regular expressions (see \code{\link[base]{grepl}}). When \code{NULL} (the default), all granules returned by the CMR search are kept. Useful for products such as Daymet that bundle several variables under one collection (see Examples).}
+  \item{pattern}{optional character vector of regular expressions. Granules whose filename does not match any of the patterns are dropped. The match is case-insensitive and uses \code{\link[base]{grepl}}. When \code{NULL} all granules are kept.}
   \item{verbose}{logical. If \code{FALSE}, progress bars and per-file cache/progress messages printed during downloading are suppressed}
   \item{...}{Additional arguments. These can be product specific. See Details)}
 }
