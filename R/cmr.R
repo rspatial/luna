@@ -108,9 +108,8 @@
 	NULL
 }
 
-.cmr_download_one <- function(url, path, USERNAME, PASSWORD, overwrite, cookie_file, netrc_file, verbose=TRUE, ...){
-  # Download a single granule. Validates the response so that an HTML auth/error
-  # page is never silently saved under a .hdf filename (issue #38).
+.cmr_download_one <- function(url, path, auth, overwrite, verbose=TRUE, ...){
+  
 	outfile <- .cmr_outfile(url, path)
 
   # If a previous run saved a tiny file (almost certainly a stale auth-failure
@@ -120,54 +119,46 @@
 		if (isTRUE(fsz < 1024)) {
 			file.remove(outfile)
 		} else {
+			if (verbose) message("reading from cache: ", basename(outfile))
 			return(outfile)
 		}
 	}
 
-	if (!is.null(USERNAME)) {
-		cfg <- httr::config(
-			netrc = TRUE,
-			netrc_file = netrc_file,
-			followlocation = TRUE,
-			ssl_verifypeer = 0,
-			cookiefile = cookie_file,
-			cookiejar = cookie_file
-		)
-		args <- list(url, cfg, httr::write_disk(outfile, overwrite = TRUE))
-		if (verbose) args <- c(args, list(httr::progress()))
-		f <- do.call(httr::GET, args)
+	cfg <- httr::config(
+		netrc = TRUE,
+		netrc_file = auth$netrc_file,
+		followlocation = TRUE,
+		ssl_verifypeer = 0,
+		cookiefile = auth$cookie_file,
+		cookiejar  = auth$cookie_file
+	)
+	args <- list(url, cfg, httr::write_disk(outfile, overwrite = TRUE))
+	if (verbose) args <- c(args, list(httr::progress()))
+	f <- do.call(httr::GET, args)
 
-		err <- .cmr_validate_response(f, outfile)
-		if (!is.null(err)) {
-			if (file.exists(outfile)) file.remove(outfile)
-			stop(err)
-		}
-	} else {
-		f <- utils::download.file(url, outfile, mode = "wb", quiet = !verbose)
-		return(f)
+	err <- .cmr_validate_response(f, outfile)
+	if (!is.null(err)) {
+		if (file.exists(outfile)) file.remove(outfile)
+		stop(err)
 	}
 	outfile
 }
 
 
-.cmr_download <- function(urls, path, username, password, overwrite, verbose=TRUE, ...){
+.cmr_download <- function(urls, path, auth, overwrite, verbose=TRUE, ...){
   # Given a list of results, download all of them. Aborts on the first
   # authentication failure so we do not produce N broken files.
 
-	files <- rep("", length(urls))
-	cookie_file <- tempfile("luna_cookies_", fileext = ".txt")
-	file.create(cookie_file)
-	netrc_file <- tempfile("luna_netrc_",  fileext = ".txt")
-	writeLines(
-		paste("machine urs.earthdata.nasa.gov login", username, "password", password),
-		netrc_file
-	)
-	on.exit(file.remove(c(netrc_file, cookie_file)), add = TRUE)
+	if (!inherits(auth, "earthdata_session")) {
+		stop("`auth` must be an `earthdata_session` (see `earthdataLogin()`)",
+		     call. = FALSE)
+	}
 
+	files <- rep("", length(urls))
 	for (i in seq_along(urls)) {
 		f <- tryCatch(
-			.cmr_download_one(urls[i], path, username, password, overwrite,
-			                  cookie_file, netrc_file, verbose=verbose),
+			.cmr_download_one(urls[i], path, auth = auth, overwrite = overwrite,
+			                  verbose = verbose),
 			luna_auth_error = function(e) e,
 			error = function(e) e
 		)

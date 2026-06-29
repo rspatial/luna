@@ -113,53 +113,9 @@
 }
 
 
-# Establish an authenticated session against ers.cr.usgs.gov by submitting
-# the HTML login form. Returns a curl handle on success or stops with an
-# informative error.
-.ers_login <- function(username, password, verbose = TRUE) {
-	hh <- httr::handle("https://ers.cr.usgs.gov")
-	r <- httr::GET("https://ers.cr.usgs.gov/login", handle = hh)
-	httr::stop_for_status(r, "fetch the EROS login page")
-
-	html <- httr::content(r, as = "parsed")
-	hids <- xml2::xml_find_all(html, "//form//input[@type='hidden']")
-	hkv  <- stats::setNames(xml2::xml_attr(hids, "value"),
-	                        xml2::xml_attr(hids, "name"))
-	if (!"csrf" %in% names(hkv)) {
-		stop("could not find csrf token on the EROS login page; the EROS UI may have changed.\n",
-		     "Visit https://earthexplorer.usgs.gov/ to download Landsat manually, or use the `rstac` package.",
-		     call. = FALSE)
-	}
-
-	pr <- httr::POST("https://ers.cr.usgs.gov/login",
-	                 handle = hh,
-	                 httr::add_headers(
-	                   Referer = "https://ers.cr.usgs.gov/login",
-	                   Origin  = "https://ers.cr.usgs.gov"
-	                 ),
-	                 body   = c(list(username = username, password = password),
-	                            as.list(hkv)),
-	                 encode = "form")
-
-	body <- httr::content(pr, as = "text", encoding = "UTF-8")
-	signed_in <- httr::status_code(pr) == 200 &&
-	             grepl("Sign Out|sign-out", body, ignore.case = TRUE)
-	if (!signed_in) {
-		stop("EROS login failed (HTTP ", httr::status_code(pr), "). ",
-		     "Check your USGS Earthdata Login `username` and `password`, ",
-		     "and that you have completed the EROS account setup at ",
-		     "https://ers.cr.usgs.gov/. ",
-		     "If logging in via a browser works but this still fails, the EROS UI may have changed; ",
-		     "in that case use the `rstac` package or download manually from earthexplorer.usgs.gov.",
-		     call. = FALSE)
-	}
-	hh
-}
-
-
-# Download a single asset URL through an authenticated EROS handle.
+# Download a single asset URL through an authenticated EROS session.
 # Validates the response so an HTML login/error page is never silently saved.
-.ers_download_one <- function(url, path, handle, overwrite = FALSE, verbose = TRUE) {
+.ers_download_one <- function(url, path, session, overwrite = FALSE, verbose = TRUE) {
 	outfile <- .cmr_outfile(url, path)
 
 	if (file.exists(outfile) && !overwrite) {
@@ -167,11 +123,13 @@
 		if (isTRUE(fsz < 1024)) {
 			file.remove(outfile)
 		} else {
+			if (verbose) message("reading from cache: ", basename(outfile))
 			return(outfile)
 		}
 	}
 
-	args <- list(url, handle = handle,
+	session <- .eros_ensure_handle(session, verbose = verbose)
+	args <- list(url, handle = session$handle,
 	             httr::config(followlocation = TRUE, ssl_verifypeer = 0),
 	             httr::write_disk(outfile, overwrite = TRUE))
 	if (verbose) args <- c(args, list(httr::progress()))
@@ -188,10 +146,13 @@
 
 getLandsat <- function(product = "landsat-c2l1", start_date, end_date, aoi,
                        download = FALSE, path,
-                       username, password,
+                       username, password, auth = NULL,
                        bands = NULL,
                        limit = 1000, overwrite = FALSE,
                        verbose = TRUE, ...) {
+
+	username_missing <- missing(username)
+	password_missing <- missing(password)
 
 	if (missing(start_date)) stop("provide a start_date")
 	if (missing(end_date))   stop("provide an end_date")
@@ -238,12 +199,10 @@ getLandsat <- function(product = "landsat-c2l1", start_date, end_date, aoi,
 	}
 
 	path <- .getPath(path)
-	if (missing(username)) stop("provide a USGS Earthdata Login `username`")
-	if (missing(password)) stop("provide a USGS Earthdata Login `password`")
 
-	hh <- .ers_login(username, password, verbose = verbose)
-	on.exit(try(httr::GET("https://ers.cr.usgs.gov/logout", handle = hh), silent = TRUE),
-	        add = TRUE)
+	session <- .resolve_auth(auth, username, password, service = "eros",
+	                         username_missing = username_missing,
+	                         password_missing = password_missing)
 
 	files <- character(nrow(asset_df))
 	for (i in seq_len(nrow(asset_df))) {
@@ -252,7 +211,7 @@ getLandsat <- function(product = "landsat-c2l1", start_date, end_date, aoi,
 			                asset_df$scene[i], asset_df$asset[i]))
 		}
 		f <- tryCatch(
-			.ers_download_one(asset_df$href[i], path, hh,
+			.ers_download_one(asset_df$href[i], path, session,
 			                  overwrite = overwrite, verbose = verbose),
 			error = function(e) e
 		)

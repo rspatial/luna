@@ -32,14 +32,24 @@ modisExtent <- function(f=NULL, h, v) {
 }
 
 
-getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=FALSE, path, 
-			username, password, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE, verbose=TRUE, ...) {
- 
-	
+getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=FALSE, path,
+			username, password, auth=NULL, server = "LPDAAC_ECS", limit = 100000, overwrite=FALSE,
+			pattern = NULL, verbose=TRUE, ...) {
+
+	username_missing <- missing(username)
+	password_missing <- missing(password)
+
 	if(missing(product)) stop("provide a product name")
 	if(missing(start_date)) stop("provide a start_date")
 	if(missing(end_date)) stop("provide an end_date")
 	if(missing(aoi)) stop("provide an area of interest")
+
+	if (!is.null(pattern)) {
+		if (!is.character(pattern) || length(pattern) < 1 || !all(nzchar(pattern))) {
+			stop("`pattern` must be a non-empty character vector of regular expressions, or NULL",
+			     call. = FALSE)
+		}
+	}
 
 	h <- .humanize()
 	h <- h[h$short_name == product, ]
@@ -85,16 +95,33 @@ getNASA <- function(product, start_date, end_date, aoi, version=NULL, download=F
 	results <- .searchGranules(product = product, version=version, start_date = start_date, end_date = end_date, extent = aoi, limit = limit)
 	urls <- unique(results[, "Online Access URLs"])
 
+	if (length(urls) > 0 && !is.null(pattern)) {
+		rx   <- paste(pattern, collapse = "|")
+		keep <- grepl(rx, basename(urls), ignore.case = TRUE, perl = TRUE)
+		if (verbose) {
+			message(sprintf("pattern '%s' kept %d of %d granules",
+			                rx, sum(keep), length(urls)))
+		}
+		if (!any(keep)) {
+			warning("`pattern` matched none of the ", length(urls),
+			        " granules; nothing to return",
+			        call. = FALSE)
+		}
+		urls <- urls[keep]
+	}
+
 	if (length(urls) > 0) {
 		if (download){
 			path <- .getPath(path)
-			if(missing(username)) stop("provide a username")
-			if(missing(password)) stop("provide a password")
+			session <- .resolve_auth(auth, username, password, service = "earthdata",
+			                         username_missing = username_missing,
+			                         password_missing = password_missing)
 
-			ff <- .cmr_download(urls, path, username, password, overwrite, verbose=verbose)			
+			ff <- .cmr_download(urls, path, auth = session,
+			                    overwrite = overwrite, verbose = verbose)
 
-			ff <- file.path(path, basename(urls))	
-			return(ff)		 
+			ff <- file.path(path, basename(urls))
+			return(ff)
 		} else {
 			return(basename(urls))
 		}

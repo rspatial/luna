@@ -1,5 +1,6 @@
 useDynLib(luna, .registration = TRUE)
 import(terra, methods, Rcpp)
-export("getProducts", "productInfo", "getNASA", "getAVHRR", "getLandsat", "fillVI", "filterVI", "modisDate", "modisExtent", "modis_mask")
+export("getProducts", "productInfo", "getNASA", "getAVHRR", "getLandsat", "fillVI", "filterVI", "modisDate", "modisExtent", "modis_mask", "earthdataLogin", "erosLogin")
 exportMethods("mesma", "panSharpen")
-
+S3method(print, earthdata_session)
+S3method(print, eros_session)
